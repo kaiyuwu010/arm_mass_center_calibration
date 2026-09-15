@@ -1,0 +1,13 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/arm_calibration_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/arm_calibration_interfaces/action/detail/servo_j__type_support.c.o"
+  "CMakeFiles/arm_calibration_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/arm_calibration_interfaces/action/detail/servo_j__type_support.c.o.d"
+  "libarm_calibration_interfaces__rosidl_typesupport_introspection_c.pdb"
+  "libarm_calibration_interfaces__rosidl_typesupport_introspection_c.so"
+  "rosidl_typesupport_introspection_c/arm_calibration_interfaces/action/detail/servo_j__rosidl_typesupport_introspection_c.h"
+  "rosidl_typesupport_introspection_c/arm_calibration_interfaces/action/detail/servo_j__type_support.c"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang C)
+  include(CMakeFiles/arm_calibration_interfaces__rosidl_typesupport_introspection_c.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "arm_calibration_interfaces__py",
+		"source" : "/home/wky/MyWorkspace/arm_calib/build/arm_calibration_interfaces/arm_calibration_interfaces__py"
+	}
+}
