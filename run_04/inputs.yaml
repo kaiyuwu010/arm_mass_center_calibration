@@ -150,9 +150,9 @@ plan:
   hold_tolerance_deg: 0.2
   min_samples: 3
   ramp_s: 1.0
-  sample_tolerance_deg: 0.4
+  sample_tolerance_deg: 0.8
   settle_s: 0.2
-  speed_deg_s: 5.0
+  speed_deg_s: 10.0
   stable_s: 0.2
   sweeps:
   - joint: 7
@@ -164,7 +164,7 @@ plan:
     - 20
     pose_deg:
     - 0
-    - -30
+    - -20
     - 20
     - 45
     - 10
@@ -200,7 +200,7 @@ plan:
     - 20
     pose_deg:
     - -45
-    - -45
+    - -20
     - 40
     - 30
     - -35
@@ -218,7 +218,7 @@ plan:
     - 20
     pose_deg:
     - 0
-    - -30
+    - -20
     - 20
     - 45
     - 10
@@ -254,7 +254,7 @@ plan:
     - 20
     pose_deg:
     - -45
-    - -45
+    - -20
     - 40
     - 30
     - -35
@@ -272,7 +272,7 @@ plan:
     - 20
     pose_deg:
     - 0
-    - -30
+    - -20
     - 20
     - 45
     - 10
@@ -308,7 +308,7 @@ plan:
     - 20
     pose_deg:
     - -45
-    - -45
+    - -20
     - 40
     - 30
     - -35
@@ -326,7 +326,7 @@ plan:
     - 20
     pose_deg:
     - 0
-    - -30
+    - -20
     - 20
     - 45
     - 10
@@ -362,7 +362,7 @@ plan:
     - 20
     pose_deg:
     - -45
-    - -45
+    - -20
     - 40
     - 30
     - -35
@@ -380,7 +380,7 @@ plan:
     - 20
     pose_deg:
     - 0
-    - -30
+    - -20
     - 20
     - 45
     - 10
@@ -416,7 +416,7 @@ plan:
     - 20
     pose_deg:
     - -45
-    - -45
+    - -20
     - 40
     - 30
     - -35
@@ -427,6 +427,60 @@ plan:
     - 30
   - joint: 2
     points_deg:
+    - -10
+    - 20
+    - 50
+    - 80
+    - 110
+    pose_deg:
+    - 0
+    - -20
+    - 20
+    - 45
+    - 10
+    - 30
+    - 20
+    range_deg:
+    - -20
+    - 120
+  - joint: 2
+    points_deg:
+    - -10
+    - 20
+    - 50
+    - 80
+    - 110
+    pose_deg:
+    - 45
+    - 30
+    - -35
+    - -40
+    - 45
+    - -30
+    - -30
+    range_deg:
+    - -20
+    - 120
+  - joint: 2
+    points_deg:
+    - -10
+    - 20
+    - 50
+    - 80
+    - 110
+    pose_deg:
+    - -45
+    - -20
+    - 40
+    - 30
+    - -35
+    - 45
+    - 45
+    range_deg:
+    - -20
+    - 120
+  - joint: 1
+    points_deg:
     - -20
     - -10
     - 0
@@ -434,7 +488,7 @@ plan:
     - 20
     pose_deg:
     - 0
-    - -30
+    - -20
     - 20
     - 45
     - 10
@@ -443,7 +497,7 @@ plan:
     range_deg:
     - -30
     - 30
-  - joint: 2
+  - joint: 1
     points_deg:
     - -20
     - -10
@@ -461,7 +515,7 @@ plan:
     range_deg:
     - -30
     - 30
-  - joint: 2
+  - joint: 1
     points_deg:
     - -20
     - -10
@@ -470,7 +524,7 @@ plan:
     - 20
     pose_deg:
     - -45
-    - -45
+    - -20
     - 40
     - 30
     - -35
@@ -479,58 +533,5 @@ plan:
     range_deg:
     - -30
     - 30
-  - joint: 1
-    points_deg:
-    - -20
-    - -10
-    - 0
-    - 10
-    - 20
-    pose_deg:
-    - 0
-    - -30
-    - 20
-    - 45
-    - 10
-    - 30
-    - 20
-    range_deg:
-    - -30
-    - 30
-  - joint: 1
-    points_deg:
-    - -20
-    - -10
-    - 0
-    - 10
-    - 20
-    pose_deg:
-    - 45
-    - 30
-    - -35
-    - -40
-    - 45
-    - -30
-    - -30
-    range_deg:
-    - -30
-    - 30
-  - joint: 1
-    points_deg:
-    - -20
-    - -10
-    - 0
-    - 10
-    - 20
-    pose_deg:
-    - -45
-    - -45
-    - 40
-    - 30
-    - -35
-    - 45
-    - 45
-    range_deg:
-    - -30
-    - 30
+  transfer_speed_deg_s: 30.0
   velocity_tolerance: 0.15

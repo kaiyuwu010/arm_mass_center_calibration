@@ -1,17 +1,18 @@
 # 仿真多姿态标定：7→1轴，每轴3组姿态；未验证真机碰撞。
-speed_deg_s: 5.0
+speed_deg_s: 10.0
+transfer_speed_deg_s: 30.0   # 基准位姿切换速度，不用于扫描
 ramp_s: 1.0
 settle_s: 0.2
 stable_s: 0.2
 velocity_tolerance: 0.15     # 速度相对容差15%
-sample_tolerance_deg: 0.4    # 采样角度窗口±0.4°及最大配对误差
+sample_tolerance_deg: 0.8    # 10deg/s时保持采样窗口通过时间，约8个样本/方向
 hold_tolerance_deg: 0.2
 min_samples: 3
 feedback_timeout_s: 1.0
 sweeps:
   # 关节7，姿态A
   - joint: 7
-    pose_deg: [0, -30, 20, 45, 10, 30, 20]
+    pose_deg: [0, -15, 20, 45, 10, 30, 20]
     range_deg: [-30, 30]
     points_deg: [-20, -10, 0, 10, 20]
 
@@ -23,13 +24,13 @@ sweeps:
 
   # 关节7，姿态C
   - joint: 7
-    pose_deg: [-45, -45, 40, 30, -35, 45, 45]
+    pose_deg: [-45, -15, 40, 30, -35, 45, 45]
     range_deg: [-30, 30]
     points_deg: [-20, -10, 0, 10, 20]
 
   # 关节6，姿态A
   - joint: 6
-    pose_deg: [0, -30, 20, 45, 10, 30, 20]
+    pose_deg: [0, -15, 20, 45, 10, 30, 20]
     range_deg: [-30, 30]
     points_deg: [-20, -10, 0, 10, 20]
 
@@ -41,13 +42,13 @@ sweeps:
 
   # 关节6，姿态C
   - joint: 6
-    pose_deg: [-45, -45, 40, 30, -35, 45, 45]
+    pose_deg: [-45, -15, 40, 30, -35, 45, 45]
     range_deg: [-30, 30]
     points_deg: [-20, -10, 0, 10, 20]
 
   # 关节5，姿态A
   - joint: 5
-    pose_deg: [0, -30, 20, 45, 10, 30, 20]
+    pose_deg: [0, -15, 20, 45, 10, 30, 20]
     range_deg: [-30, 30]
     points_deg: [-20, -10, 0, 10, 20]
 
@@ -59,13 +60,13 @@ sweeps:
 
   # 关节5，姿态C
   - joint: 5
-    pose_deg: [-45, -45, 40, 30, -35, 45, 45]
+    pose_deg: [-45, -15, 40, 30, -35, 45, 45]
     range_deg: [-30, 30]
     points_deg: [-20, -10, 0, 10, 20]
 
   # 关节4，姿态A
   - joint: 4
-    pose_deg: [0, -30, 20, 45, 10, 30, 20]
+    pose_deg: [0, -15, 20, 45, 10, 30, 20]
     range_deg: [-30, 30]
     points_deg: [-20, -10, 0, 10, 20]
 
@@ -77,13 +78,13 @@ sweeps:
 
   # 关节4，姿态C
   - joint: 4
-    pose_deg: [-45, -45, 40, 30, -35, 45, 45]
+    pose_deg: [-45, -15, 40, 30, -35, 45, 45]
     range_deg: [-30, 30]
     points_deg: [-20, -10, 0, 10, 20]
 
   # 关节3，姿态A
   - joint: 3
-    pose_deg: [0, -30, 20, 45, 10, 30, 20]
+    pose_deg: [0, -15, 20, 45, 10, 30, 20]
     range_deg: [-30, 30]
     points_deg: [-20, -10, 0, 10, 20]
 
@@ -95,31 +96,31 @@ sweeps:
 
   # 关节3，姿态C
   - joint: 3
-    pose_deg: [-45, -45, 40, 30, -35, 45, 45]
+    pose_deg: [-45, -15, 40, 30, -35, 45, 45]
     range_deg: [-30, 30]
     points_deg: [-20, -10, 0, 10, 20]
 
   # 关节2，姿态A
   - joint: 2
-    pose_deg: [0, -30, 20, 45, 10, 30, 20]
-    range_deg: [-30, 30]
-    points_deg: [-20, -10, 0, 10, 20]
+    pose_deg: [0, -15, 20, 45, 10, 30, 20]
+    range_deg: [-15, 120]
+    points_deg: [0, 20, 50, 80, 110]
 
   # 关节2，姿态B
   - joint: 2
     pose_deg: [45, 30, -35, -40, 45, -30, -30]
-    range_deg: [-30, 30]
-    points_deg: [-20, -10, 0, 10, 20]
+    range_deg: [-15, 120]
+    points_deg: [0, 20, 50, 80, 110]
 
   # 关节2，姿态C
   - joint: 2
-    pose_deg: [-45, -45, 40, 30, -35, 45, 45]
-    range_deg: [-30, 30]
-    points_deg: [-20, -10, 0, 10, 20]
+    pose_deg: [-45, -15, 40, 30, -35, 45, 45]
+    range_deg: [-15, 120]
+    points_deg: [0, 20, 50, 80, 110]
 
   # 关节1，姿态A
   - joint: 1
-    pose_deg: [0, -30, 20, 45, 10, 30, 20]
+    pose_deg: [0, -15, 20, 45, 10, 30, 20]
     range_deg: [-30, 30]
     points_deg: [-20, -10, 0, 10, 20]
 
@@ -131,7 +132,7 @@ sweeps:
 
   # 关节1，姿态C
   - joint: 1
-    pose_deg: [-45, -45, 40, 30, -35, 45, 45]
+    pose_deg: [-45, -15, 40, 30, -35, 45, 45]
     range_deg: [-30, 30]
     points_deg: [-20, -10, 0, 10, 20]
 

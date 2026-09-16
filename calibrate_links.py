@@ -67,7 +67,9 @@ def motion(q0, q1, speed, ramp, dt):
     ramp = min(ramp, distance / speed)           # 加减速的平均速度是speed/2，所以短距离不要匀速段
     cruise = max(0., distance / speed - ramp)    # 匀速时间
     total = 2*ramp + cruise                        
-    t = np.r_[np.arange(0., total, dt), total]   # 采样时间数组  
+    t = np.arange(0., total, dt)
+    # 末点按ROS纳秒精度去重，避免浮点误差生成相同的time_from_start。
+    t = np.r_[t[np.rint(t*1e9) < round(total*1e9)], total]
     s = np.empty(len(t))
     # 对恒加速、匀速、恒减速的速度积分，得到公共位移s（deg）
     for n, x in enumerate(t):
@@ -84,7 +86,8 @@ def motion(q0, q1, speed, ramp, dt):
 
 
 def validate_plan(plan, cfg):
-    for name, default in (("speed_deg_s", .5), ("ramp_s", 3.), ("settle_s", 1.), ("sample_tolerance_deg", .15), ("velocity_tolerance", .15),
+    plan.setdefault("transfer_speed_deg_s", plan.get("speed_deg_s", .5))
+    for name, default in (("speed_deg_s", .5), ("transfer_speed_deg_s", .5), ("ramp_s", 3.), ("settle_s", 1.), ("sample_tolerance_deg", .15), ("velocity_tolerance", .15),
                           ("stable_s", .5), ("feedback_timeout_s", 1.), ("hold_tolerance_deg", .2)):
         plan.setdefault(name, default)
         if not math.isfinite(plan[name]) or plan[name] <= 0:
@@ -94,9 +97,9 @@ def validate_plan(plan, cfg):
     plan.setdefault("min_samples", 3)
     if not isinstance(plan["min_samples"], int) or plan["min_samples"] < 2:
         raise ValueError("min_samples至少为2!!!")
-    if plan["speed_deg_s"] > min(cfg["velocity_limit_deg_s"]):
+    if max(plan["speed_deg_s"], plan["transfer_speed_deg_s"]) > min(cfg["velocity_limit_deg_s"]):
         raise ValueError("扫描速度超过关节速度限制!!!")
-    acceleration = plan["speed_deg_s"] / plan["ramp_s"]
+    acceleration = max(plan["speed_deg_s"], plan["transfer_speed_deg_s"]) / plan["ramp_s"]
     if acceleration > min(cfg["acceleration_limit_deg_s2"] + cfg["deceleration_limit_deg_s2"]):
         raise ValueError("加减速超过关节限制, 请增加ramp_s!!!")
     if not plan.get("sweeps"):
@@ -361,16 +364,18 @@ def collect(args, cfg, plan, output):
             raise ValueError("当前位置超出配置范围!!!")
         if np.max(np.abs(latest["state"][2])) > .1:
             raise RuntimeError("请待机械臂静止后开始下一段!!!")
+        # 姿态切换使用独立速度；扫描仍按标定速度运动。
+        speed = plan["transfer_speed_deg_s"] if scan is None else plan["speed_deg_s"]
         # 控制周期转为ms
         dt = cfg["control_period_ms"]/1000.
         if not .002 <= dt <= .1:
             raise ValueError("control_period_ms必须为2~100!!!")
-        if np.max(np.abs(q1 - q0))/plan["speed_deg_s"]/dt > 200000:
+        if np.max(np.abs(q1 - q0))/speed/dt > 200000:
             raise ValueError("轨迹超过20万点, 请缩短移动距离或分段执行!!!")
         # 根据梯形速度规划轨迹
-        t, positions, flat = motion(q0, q1, plan["speed_deg_s"], plan["ramp_s"], dt)
-        if flat[0] > 0 and plan["speed_deg_s"] / flat[0] > min(cfg["acceleration_limit_deg_s2"] + cfg["deceleration_limit_deg_s2"]):
-            raise ValueError("短距离移动加速度超限, 请减小speed_deg_s!!!")
+        t, positions, flat = motion(q0, q1, speed, plan["ramp_s"], dt)
+        if flat[0] > 0 and speed / flat[0] > min(cfg["acceleration_limit_deg_s2"] + cfg["deceleration_limit_deg_s2"]):
+            raise ValueError("短距离移动加速度超限, 请减小当前段的扫描或切换速度!!!")
         # 额外静止保持，等实际电机停止后才开始下一段
         t = np.r_[t, t[-1] + plan["settle_s"]]
         # 构造ros控制消息

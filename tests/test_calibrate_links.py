@@ -49,6 +49,20 @@ class CalibrationTest(unittest.TestCase):
         self.assertAlmostEqual(v[0], (.5/3.)*(t[1]-t[0])/2)
         self.assertAlmostEqual(v[-1], (.5/3.)*(t[-1]-t[-2])/2)
 
+    def test_motion_pose_transition_has_unique_ros_timestamps(self):
+        start = np.array([0., -30., 20., 45., 10., 30., -30.])
+        end = np.array([45., 30., -35., -40., 45., -30., -30.])
+        for offset in [0., 8e-14, 1e-10, 1e-9, -1e-10]:
+            with self.subTest(offset=offset):
+                q0 = start.copy()
+                q0[3] += offset
+                t, q, _ = m.motion(q0, end, 5., 1., .01)
+                ns = np.array([int(round(x*1e9)) for x in t])
+                self.assertTrue(np.all(np.diff(ns) > 0))
+                np.testing.assert_allclose(q[0], q0)
+                np.testing.assert_allclose(q[-1], end)
+                self.assertEqual(len(t), len(q))
+
     def test_bidirectional_pairing_and_rank_deficiency(self):
         rng = np.random.default_rng(42)
         sweeps, raw = [], []

@@ -42,7 +42,11 @@ def load_model(path, names, side=False, mass_scale=1.):
     spec.add_texture(name='floor', type=mujoco.mjtTexture.mjTEXTURE_2D, builtin=mujoco.mjtBuiltin.mjBUILTIN_CHECKER, rgb1=[.85, .85, .85], rgb2=[1, 1, 1], width=64, height=64)
     floor = spec.add_material(name='floor', texrepeat=[5, 5], texuniform=True)
     floor.textures[mujoco.mjtTextureRole.mjTEXROLE_RGB] = 'floor'
-    spec.worldbody.add_geom(name='floor', type=mujoco.mjtGeom.mjGEOM_PLANE, size=[2, 2, .1], pos=[0, 0, -.01], material='floor', contype=0, conaffinity=0)
+    # 0.3×0.3×1m底座柱，柱顶位于基座原点z=0；地面移到柱底。
+    spec.worldbody.add_geom(name='pedestal', type=mujoco.mjtGeom.mjGEOM_BOX,
+                            size=[.05, .05, .5], pos=[0, 0, -.5],
+                            rgba=[.55, .57, .60, 1], contype=0, conaffinity=0)
+    spec.worldbody.add_geom(name='floor', type=mujoco.mjtGeom.mjGEOM_PLANE, size=[2, 2, .1], pos=[0, 0, -1.0], material='floor', contype=0, conaffinity=0)
     # 生成模型
     model = spec.compile()
     if model.nq != 7 or model.nv != 7:
