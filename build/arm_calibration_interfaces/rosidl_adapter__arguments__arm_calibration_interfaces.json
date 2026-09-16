@@ -1,6 +1,0 @@
-{
-  "package_name": "arm_calibration_interfaces",
-  "non_idl_tuples": [
-    "/home/wky/MyWorkspace/arm_calib/ros/arm_calibration_interfaces:action/ServoJ.action"
-  ]
-}
