@@ -113,8 +113,8 @@ def validate_plan(plan, cfg):
             raise ValueError("姿态或扫描范围超出关节限制!!!")
         if len(points) < 3 or not np.isfinite(points).all() or np.any(np.diff(points) <= 0):
             raise ValueError("points_deg至少3个严格递增的有限角度!!!")
-        margin = plan["speed_deg_s"]*(plan["ramp_s"]/2+plan["settle_s"]+plan["stable_s"]) + plan["sample_tolerance_deg"]
-        if points[0] <= start+margin or points[-1] >= end-margin:
+        margin = plan["speed_deg_s"]*(plan["ramp_s"]/2 + plan["settle_s"] + plan["stable_s"]) + plan["sample_tolerance_deg"]
+        if points[0] <= start + margin or points[-1] >= end - margin:
             raise ValueError("采样点离两端太近, 必须留足加速、稳定和减速距离!!!")
     return plan
 
@@ -123,50 +123,59 @@ def paired_rows(raw, plan, cfg, g):
     A, b, metadata = [], [], []      # A是重力回归矩阵 b是平均力矩 
     scales = np.asarray(cfg["drag"]["torque_permille_per_nm"])
     signs = np.asarray(cfg["joint_directions"])
-    for sid, sweep in enumerate(plan["sweeps"]):
-        j = sweep["joint"]-1
+    # 遍历plan中的每个扫描
+    for sweep_id, sweep in enumerate(plan["sweeps"]):
+        j = sweep["joint"] - 1
+        # 遍历每个扫描中的点
         for point in sweep["points_deg"]:
             selected = []
+            # 筛选出正反两个方向的数据
             for direction in (1, -1):
-                rows = [r for r in raw if r["sweep"] == sid and r["direction"] == direction
-                        and abs(r["q"][j]-point) <= plan["sample_tolerance_deg"]]
+                # 遍历每行数据，筛选出满足id、方向、位置误差三个条件的数据
+                rows = [r for r in raw if r["sweep"] == sweep_id and r["direction"] == direction and abs(r["q"][j] - point) <= plan["sample_tolerance_deg"]]
                 if len(rows) < plan["min_samples"]:
-                    raise ValueError(f"扫描{sid}关节{j+1}角度{point}方向{direction}稳定采样不足!!!")
+                    raise ValueError(f"扫描id: {sweep_id}, 关节: {j+1} ,角度: {point} ,方向: {direction} ,稳定采样不足!!!")
                 selected.append(rows)
-            # 按实际位置最近邻配对，避免正反向角度不同造成重力偏差；每个样本只用一次。
+            # 反向样本
             reverse = list(selected[1])
             pairs = []
+            # 遍历正向样本
             for fwd in selected[0]:
+                # 反向样本用完结束配对
                 if not reverse:
                     break
-                # 配对正反向样本
-                idx = int(np.argmin([abs(r["q"][j]-fwd["q"][j]) for r in reverse]))
+                # 从反向样本中配对到当前正向样本
+                idx = int(np.argmin([abs(r["q"][j] - fwd["q"][j]) for r in reverse]))
                 rev = reverse[idx]
-                if np.max(np.abs(np.asarray(fwd["q"])-rev["q"])) > plan["sample_tolerance_deg"]:
+                # 正反向角度差要在容差内
+                if np.max(np.abs(np.asarray(fwd["q"]) - rev["q"])) > plan["sample_tolerance_deg"]:
                     continue
-                if abs(abs(fwd["v"][j])-abs(rev["v"][j])) > plan["speed_deg_s"]*plan["velocity_tolerance"]:
+                # 正反向速度差要在容差内
+                if abs(abs(fwd["v"][j]) - abs(rev["v"][j])) > plan["speed_deg_s"] * plan["velocity_tolerance"]:
                     continue
                 reverse.pop(idx)
+                # 采样点处的正向和反向回归矩阵行
                 yf = regressor(fwd["q"], cfg, g)[j]
                 yr = regressor(rev["q"], cfg, g)[j]
-                # 平均力矩
-                tau = (fwd["torque"][j]+rev["torque"][j])/2*signs[j]/scales[j]
-                pairs.append(((yf+yr)/2, tau))
+                # 平均力矩并转换方向
+                tau = (fwd["torque"][j] + rev["torque"][j]) / 2*signs[j] / scales[j]
+                pairs.append(((yf + yr)/2, tau))
             if len(pairs) < plan["min_samples"]:
-                raise ValueError(f"扫描{sid}角度{point}正反向同角度等速配对不足")
+                raise ValueError(f"扫描id: {sweep_id}，角度: {point}正反向同角度等速配对不足!!!")
+            # 保存数据
             A.append(np.mean([p[0] for p in pairs], axis=0))
             b.append(float(np.mean([p[1] for p in pairs])))
-            metadata.append({"sweep": sid, "joint": j+1, "point_deg": point, "pairs": len(pairs)})
+            metadata.append({"sweep": sweep_id, "joint": j+1, "point_deg": point, "pairs": len(pairs)})
     return np.asarray(A), np.asarray(b), metadata
 
 # 根据输入数据辨识参数
 def identify(A, b, cfg, metadata):
     if A.ndim != 2 or A.shape[0] == 0 or A.shape[1] != 28 or not np.isfinite(A).all() or not np.isfinite(b).all():
-        raise ValueError("拟合数据为空或包含无效值")
-    # 将已有质量、质心转化为先验参数
+        raise ValueError("拟合数据为空或包含无效值!!!")
+    # 将配置文件中的质量、质心转化为先验参数
     masses = np.asarray(cfg["drag"]["link_mass_kg"])
     com = np.asarray(cfg["drag"]["link_com_m"]).reshape(7, 3)
-    prior = np.column_stack((masses, masses[:, None]*com)).ravel()
+    prior = np.column_stack((masses, masses[:, None] * com)).ravel()
     # 使用单位尺度归一化，避免kg和kg*m混合使秩判断失真
     scale = np.tile([1., .1, .1, .1], 7)
     stages = []
@@ -177,8 +186,8 @@ def identify(A, b, cfg, metadata):
         rows = [i for i, item in enumerate(metadata) if item["joint"] >= joint]
         if not rows:
             continue
-        cols = slice(4*(joint-1), 28)
-        X = A[rows, cols]*scale[cols]
+        cols = slice(4*(joint - 1), 28)
+        X = A[rows, cols] * scale[cols]
         # svd分解找到能辨识的参数
         U, singular, Vt = np.linalg.svd(X, full_matrices=False)
         rank = int(np.sum(singular > max(1e-10, singular[0]*1e-4))) if singular.size else 0
@@ -190,14 +199,20 @@ def identify(A, b, cfg, metadata):
         observable[:] = 0
         # 可观测的参数对应的回归矩阵
         observable[cols] = np.sum(Vt[:rank]**2, axis=0)
-        stages.append({"joint": joint, "rank": rank, "unknowns": X.shape[1], "rmse_nm": float(np.sqrt(np.mean((A[rows] @ estimate - b[rows])**2))), "singular_values": singular.tolist()})
+        stages.append({"joint": joint, 
+                       "rank": rank, 
+                       "unknowns": X.shape[1], 
+                       "rmse_nm": float(np.sqrt(np.mean((A[rows] @ estimate - b[rows])**2))), 
+                       "singular_values": singular.tolist()})
     params = estimate.reshape(7, 4)
     valid = bool(np.isfinite(params).all() and np.all(params[:, 0] > 0))
-    report = {"stages": stages, "physical_mass_valid": valid,
-              "note": "不可辨识方向保留先验；单独质量和质心不是唯一标定结果。摩擦平均仅近似抵消对称库仑/粘性摩擦。",
+    report = {"stages": stages, 
+              "physical_mass_valid": valid,
+              "note": "不可辨识方向保留先验，单独质量和质心不是唯一标定结果。摩擦平均仅近似抵消对称库仑/粘性摩擦。",
               "observable_fraction_m_hx_hy_hz": observable.reshape(7, 4).tolist(),
-              "parameters_m_hx_hy_hz": params.tolist(), "samples": metadata,
-              "rmse_nm": float(np.sqrt(np.mean((A@estimate-b)**2)))}
+              "parameters_m_hx_hy_hz": params.tolist(), 
+              "samples": metadata,
+              "rmse_nm": float(np.sqrt(np.mean((A @ estimate - b)**2)))}
     patch = None
     if valid:
         patch = {"arm_driver": {"ros__parameters": {"drag": {"link_mass_kg": params[:, 0].tolist(), "link_com_m": (params[:, 1:]/params[:, :1]).ravel().tolist()}}}}
@@ -246,7 +261,7 @@ def collect(args, cfg, plan, output):
         now = time.monotonic()
         latest["torque"] = now
         state = latest["state"]
-        # 力矩话题没有Header，只能按到达时间近似配对；拒绝超过半个发布周期的状态。
+        # 力矩话题没有Header，只能按到达时间近似配对，拒绝超过半个发布周期的状态。
         if state is None:
             return
         if len(msg.data) != 7 or not np.isfinite(np.r_[state[1], state[2], msg.data]).all():
@@ -289,7 +304,7 @@ def collect(args, cfg, plan, output):
         # 计算期望速度
         expected_v = context["direction"]*plan["speed_deg_s"]
         # 计算当前时间距离该段运动开始经过了多久
-        elapsed = now-context["started"]
+        elapsed = now - context["started"]
         # 取出motion()返回的匀速段起止时间
         flat = context["flat"]
         # 判断是否稳定
@@ -307,7 +322,7 @@ def collect(args, cfg, plan, output):
         if stable_since is None:
             stable_since = now
         # 必须在稳定后再过plan["stable_s"]的时间记录数据
-        if now-stable_since < plan["stable_s"]:
+        if now - stable_since < plan["stable_s"]:
             return
         # 组织并添加数据
         row = {"time": now, "sweep": context["sweep"], "direction": context["direction"], "q": q.tolist(), "v": v.tolist(), "torque": torque.tolist()}
@@ -320,7 +335,7 @@ def collect(args, cfg, plan, output):
 
     # 等待消息返回
     def wait(future, timeout):
-        deadline = time.monotonic()+timeout
+        deadline = time.monotonic() + timeout
         while rclpy.ok() and not future.done():
             rclpy.spin_once(node, timeout_sec=.02)
             if failure:
@@ -350,7 +365,7 @@ def collect(args, cfg, plan, output):
         dt = cfg["control_period_ms"]/1000.
         if not .002 <= dt <= .1:
             raise ValueError("control_period_ms必须为2~100!!!")
-        if np.max(np.abs(q1-q0))/plan["speed_deg_s"]/dt > 200000:
+        if np.max(np.abs(q1 - q0))/plan["speed_deg_s"]/dt > 200000:
             raise ValueError("轨迹超过20万点, 请缩短移动距离或分段执行!!!")
         # 根据梯形速度规划轨迹
         t, positions, flat = motion(q0, q1, plan["speed_deg_s"], plan["ramp_s"], dt)
@@ -374,7 +389,7 @@ def collect(args, cfg, plan, output):
         active = wait(client.send_goal_async(goal), 5.)
         if not active.accepted:
             active = None
-            raise RuntimeError("ServoJ拒绝目标, 请确认机械臂已使能、未处于拖动或其他运动中")
+            raise RuntimeError("ServoJ拒绝目标, 请确认机械臂已使能、未处于拖动或其他运动中!!!")
         if scan is not None:
             context = dict(scan, started=started, flat=flat)
         stable_since, previous_v = None, None
@@ -382,7 +397,7 @@ def collect(args, cfg, plan, output):
         active, context = None, None
         if not result.result.success:
             raise RuntimeError(result.result.message)
-        if latest["state"] is None or np.max(np.abs(latest["state"][1]-q1)) > plan["hold_tolerance_deg"]:
+        if latest["state"] is None or np.max(np.abs(latest["state"][1] - q1)) > plan["hold_tolerance_deg"]:
             raise RuntimeError("实际关节未到达段终点!!!")
 
     try:
@@ -455,6 +470,7 @@ def main():
     report, patch = identify(A, b, cfg, metadata)
     # 保存参数相关内容
     (args.output/"report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2))
+    # 保存pair
     with (args.output/"paired.csv").open("w") as f:
         writer = csv.writer(f)
         writer.writerow(["sweep", "joint", "point_deg", "pairs", "gravity_torque_nm"])

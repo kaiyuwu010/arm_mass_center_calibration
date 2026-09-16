@@ -3,40 +3,43 @@ speed_deg_s: 5.0
 ramp_s: 1.0
 settle_s: 0.2
 stable_s: 0.2
-velocity_tolerance: 10       # 实测速度和正反向速度匹配相对误差
-sample_tolerance_deg: 10     # 角度采样窗/最大配对误差
+velocity_tolerance: 1         # 采样速度和正反向速度误差容忍度
+sample_tolerance_deg: 2       # 采样角度误差容忍度，目标角度正负sample_tolerance_deg范围
+hold_tolerance_deg: 0.2
+min_samples: 3
+feedback_timeout_s: 1.0
 sweeps:
   - joint: 7
     pose_deg: [0, 0, 0, 0, 0, 0, 0]
     range_deg: [-30, 30]
-    points_deg: [-1, 0, 1]
+    points_deg: [-20, 0, 20]
 
   - joint: 6
     pose_deg: [0, 0, 0, 0, 0, 0, 0]
     range_deg: [-30, 30]
-    points_deg: [-1, 0, 1]
+    points_deg: [-20, 0, 20]
 
   - joint: 5
     pose_deg: [0, 0, 0, 0, 0, 0, 0]
     range_deg: [-30, 30]
-    points_deg: [-1, 0, 1]
+    points_deg: [-20, 0, 20]
 
   - joint: 4
     pose_deg: [0, 0, 0, 0, 0, 0, 0]
     range_deg: [-30, 30]
-    points_deg: [-1, 0, 1]
+    points_deg: [-20, 0, 20]
 
   - joint: 3
     pose_deg: [0, 0, 0, 0, 0, 0, 0]
     range_deg: [-30, 30]
-    points_deg: [-1, 0, 1]
+    points_deg: [-20, 0, 20]
 
   - joint: 2
     pose_deg: [0, 0, 0, 0, 0, 0, 0]
     range_deg: [-30, 30]
-    points_deg: [-1, 0, 1]
+    points_deg: [-20, 0, 20]
 
   - joint: 1
     pose_deg: [0, 0, 0, 0, 0, 0, 0]
     range_deg: [-30, 30]
-    points_deg: [-1, 0, 1]
+    points_deg: [-20, 0, 20]
