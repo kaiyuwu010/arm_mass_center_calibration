@@ -54,9 +54,9 @@ def regressor(q_deg, cfg, g):
     # 构造回归矩阵
     for j in range(7):
         for l in range(j, 7):
-            Y[j, 4*l] = -axes[j] @ np.cross(origins[l] - origins[j], g) # 质量系数，1行1列
+            Y[j, 4*l] = -axes[j] @ np.cross(origins[l] - origins[j], g)     # 质量系数，1行1列
             for c in range(3):
-                Y[j, 4*l+c+1] = -axes[j] @ np.cross(rotations[l][:, c], g) # 质心乘质量的系数，1行1列
+                Y[j, 4*l+c+1] = -axes[j] @ np.cross(rotations[l][:, c], g)  # 质心乘质量的系数，1行1列
     return Y
 
 # 生成从关节角度q0运动到q1的轨迹，梯形速度曲线; speed: 最大关节速度; ramp: 加减速段各自持续时间; dt: 轨迹采样时间间隔; 单位: deg/s, s
