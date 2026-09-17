@@ -51,7 +51,7 @@ def regressor(q_deg, cfg, g):
         axes.append(T[:3, 2].copy())
         rotations.append(T[:3, :3].copy())
     Y = np.zeros((7, 28))
-    # 构造回归矩阵
+    # 构造回归矩阵，Y的形状是7X28
     for j in range(7):
         for l in range(j, 7):
             Y[j, 4*l] = -axes[j] @ np.cross(origins[l] - origins[j], g)     # 质量系数，1行1列

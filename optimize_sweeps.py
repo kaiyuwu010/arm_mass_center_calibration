@@ -15,7 +15,7 @@ def rank(singular):
     # 必须大于1e-10，或最大奇异值singular[0]的万分之一
     return int(np.sum(singular > max(1e-10, singular[0]*1e-4))) if len(singular) else 0
 
-# 构建回归矩阵
+# 构建回归矩阵，返回的矩阵形状是sweeps.size()X7X28
 def matrix(sweeps, cfg, gravity):
     rows = []
     # 遍历扫描
@@ -50,10 +50,15 @@ def optimize(cfg, plan, gravity, lower, upper, count, candidates, seed):
     basis = vt[:r].T
     check = np.vstack([regressor(q, cfg, gravity)*SCALE for q in rng.uniform(lower, upper, (128, 7))])
     # 先把check投影到basis，再用basis.T还原，如果还原后的矩阵与原来的差不多，投影损失residual会很小
-    residual = np.linalg.norm(check - (check @ basis) @ basis.T)/np.linalg.norm(check)
-    # 根据投影损失的大小和测试矩阵svd分解后的秩，判断之前生成的姿态是否满足
+    projection_error = np.linalg.norm(check - (check @ basis) @ basis.T)
+    check_norm = np.linalg.norm(check)
+    residual = projection_error/check_norm
+    print(f"投影误差范数: {projection_error:.16g}")
+    print(f"check范数: {check_norm:.16g}")
+    print(f"残差为: {residual:.16g}")
+    # 根据投影损失的大小和测试矩阵svd分解后的秩，判断秩是否可靠
     if residual > 1e-6 or rank(np.linalg.svd(check, compute_uv = False)) != r:
-        raise ValueError('参考子空间不稳定，请扩大姿态范围后重试!!!')
+        raise ValueError('随机生成的参考子空间不稳定，请扩大姿态范围后重试!!!')
     # 保留原有候选，并复用各轴的扫描范围/采样点，每次扫描只有一个轴运动
     pool = copy.deepcopy(plan['sweeps'])
     templates = {}
@@ -142,7 +147,7 @@ def main():
     parser.add_argument('--plan', type=Path, default=ROOT/'plan.yaml', help='继承速度、各轴扫描范围和采样点')
     parser.add_argument('--output', type=Path, default=ROOT/'plan_optimized.yaml')
     parser.add_argument('--side', action='store_true', help='侧装，与采集端一致')
-    parser.add_argument('--count', type=int, default=21, help='扫描任务总数，不强制各轴数量相同')
+    parser.add_argument('--count', type=int, default=42, help='扫描任务总数，不强制各轴数量相同')
     parser.add_argument('--candidates', type=int, default=100, help='每种扫描模板生成的随机姿态数')
     parser.add_argument('--seed', type=int, default=42)
     args = parser.parse_args()
