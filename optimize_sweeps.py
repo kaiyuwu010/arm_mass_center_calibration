@@ -15,7 +15,7 @@ def rank(singular):
     # 必须大于1e-10，或最大奇异值singular[0]的万分之一
     return int(np.sum(singular > max(1e-10, singular[0]*1e-4))) if len(singular) else 0
 
-# 构建回归矩阵，返回的矩阵形状是sweeps.size()X7X28
+# 构建回归矩阵，返回的矩阵形状是sweeps.size() X points.size() X 28
 def matrix(sweeps, cfg, gravity):
     rows = []
     # 遍历扫描
@@ -25,6 +25,7 @@ def matrix(sweeps, cfg, gravity):
         for point in sweep['points_deg']:
             q = np.array(sweep['pose_deg'], dtype=float)
             q[j] = point
+            # 这里只取了regressor返回的7X28矩阵中第j行
             rows.append(regressor(q, cfg, gravity)[j]*SCALE)
     return np.asarray(rows)
 
@@ -44,6 +45,7 @@ def optimize(cfg, plan, gravity, lower, upper, count, candidates, seed):
     _, singular, vt = np.linalg.svd(reference, full_matrices=False)
     # 计算矩阵的秩
     r = rank(singular)
+    print(f"矩阵的秩为: {r}")
     if not r:
         raise ValueError('给定姿态范围没有可辨识的重力参数!!!')
     # 根据秩取出vt的前r行，转置后形状为: 28Xr
@@ -88,28 +90,30 @@ def optimize(cfg, plan, gravity, lower, upper, count, candidates, seed):
     # 重新赋值给pool
     pool = list(unique.values())
     validate_plan(dict(plan, sweeps=pool), cfg)
-    # 从pool里取出轨迹构建回归矩阵的行，投影到basis
+    # 从pool里取出轨迹构建回归矩阵的行，投影到basis，blocks的形状是: 扫描数 X (每条扫描采样数 X r)
     blocks = [matrix([s], cfg, gravity) @ basis for s in pool]
     # 检查候选扫描的秩是否小于r
     if rank(np.linalg.svd(np.vstack(blocks), compute_uv=False)) < r:
         raise ValueError('候选扫描不能覆盖目标秩，请增加候选数量、姿态范围或扫描轴!!!')
     if count > len(pool):
         raise ValueError('扫描数量超过不重复候选数量!!!')
-    # 信息矩阵BᵀB可逐块累加，先按秩选，再按log(det)选择信息增量最大的扫描
+    # 构造信息矩阵，b的形状是: (每条扫描采样点数, r)，grams的形状是: (扫描数, r, r)
     grams = np.array([b.T @ b for b in blocks])
-    # 求各个信息矩阵对角线之和，并取最大值
+    # 先从扫描数个(r, r)信息矩阵生成迹，再从中取最大值，最大值再缩小1e-8，不能小于1e-12
     ridge = max(float(np.max(np.trace(grams, axis1 = 1, axis2=2)))*1e-8, 1e-12)
     info = np.zeros((r, r))
     available = np.ones(len(pool), dtype=bool) # 记录扫描是否已经被选择
     chosen = []
     # 每次从剩余候选中选出一条最有用的扫描，先看秩，再看信息量评分
     for _ in range(count):
+        # 取出available中所有True元素的下标
         ids = np.flatnonzero(available)
-        # 计算特征值
+        # grams[ids]表示剩余候选的信息矩阵，形状为:(K, r, r)，这里相当于分别计算: info + grams[ids[0]]、info + grams[ids[1]]...，特征值结果values的形状: (K, r)
+        # values[k]表示，选中的信息矩阵info加上候选的信息矩阵grams[ids[k]]后，各参数方向的信息强度
         values = np.maximum(np.linalg.eigvalsh(info + grams[ids]), 0.)
-        # 计算有效秩
+        # values最后一列特征值最大，乘上1e-8后作为阈值，按行计算有效秩，形状为(K，)
         ranks = np.sum(values > np.maximum(1e-20, values[:, -1:]*1e-8), axis=1)
-        # 计算整体信息量评分
+        # 计算整体信息量评分，对每个特征值加上小正数ridge，对于特征值为0的情况，避免评分出现负无穷，按行求和从(K，r)变为(K，)
         scores = np.sum(np.log(values + ridge), axis=1)
         # 选出最佳候选，先比较ranks，再比较scores
         best = ids[np.lexsort((scores, ranks))[-1]]
