@@ -85,6 +85,14 @@ def motion(q0, q1, speed, ramp, dt):
     return t, q0 + s[:, None]/distance*(q1 - q0), (ramp, ramp + cruise)
 
 
+# 按5度间隔采样
+def sample_points(sweep, plan):
+    start, end = sweep['range_deg']
+    # 计算扫描两端预留的角度
+    margin = plan['speed_deg_s']*(plan['ramp_s']/2 + plan['settle_s'] + plan['stable_s']) + plan['sample_tolerance_deg']
+    return np.arange(start + margin + 1e-6, end - margin, 5.).tolist()
+
+
 def validate_plan(plan, cfg):
     plan.setdefault("transfer_speed_deg_s", plan.get("speed_deg_s", .5))
     for name, default in (("speed_deg_s", .5), ("transfer_speed_deg_s", .5), ("ramp_s", 3.), ("settle_s", 1.), ("sample_tolerance_deg", .15), ("velocity_tolerance", .15),
@@ -108,17 +116,16 @@ def validate_plan(plan, cfg):
     for sweep in plan["sweeps"]:
         j = sweep["joint"] - 1
         q = np.asarray(sweep["pose_deg"], dtype=float)
-        points = np.asarray(sweep["points_deg"], dtype=float)
         start, end = sweep["range_deg"]
         if not 0 <= j < 7 or q.shape != (7,) or not np.isfinite(q).all():
             raise ValueError("joint使用1~7, pose_deg必须有7个有限角度!!!")
         if not np.all((q > lo) & (q < hi)) or not lo[j] < start < end < hi[j]:
             raise ValueError("姿态或扫描范围超出关节限制!!!")
-        if len(points) < 3 or not np.isfinite(points).all() or np.any(np.diff(points) <= 0):
-            raise ValueError("points_deg至少3个严格递增的有限角度!!!")
-        margin = plan["speed_deg_s"]*(plan["ramp_s"]/2 + plan["settle_s"] + plan["stable_s"]) + plan["sample_tolerance_deg"]
-        if points[0] <= start + margin or points[-1] >= end - margin:
-            raise ValueError("采样点离两端太近, 必须留足加速、稳定和减速距离!!!")
+        if plan['sample_tolerance_deg'] >= 2.5:
+            raise ValueError('5度采样间隔要求sample_tolerance_deg小于2.5，避免窗口重叠')
+        if not math.isfinite(start) or not math.isfinite(end) or len(sample_points(sweep, plan)) < 3:
+            raise ValueError('有效匀速区间不足以容纳3个间隔5度的采样点，请扩大扫描范围或降低速度')
+        sweep.pop('points_deg', None)  # 旧配置字段不再参与采样。
     return plan
 
 # 把正反向扫描的原始数据，整理成用于辨识的线性方程
@@ -130,7 +137,7 @@ def paired_rows(raw, plan, cfg, g):
     for sweep_id, sweep in enumerate(plan["sweeps"]):
         j = sweep["joint"] - 1
         # 遍历每个扫描中的点
-        for point in sweep["points_deg"]:
+        for point in sample_points(sweep, plan):
             selected = []
             # 筛选出正反两个方向的数据
             for direction in (1, -1):

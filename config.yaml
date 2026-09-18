@@ -3,8 +3,8 @@ arm_driver:
   ros__parameters:
     joint_names: [joint1, joint2, joint3, joint4, joint5, joint6, joint7]
     joint_directions: [1, 1, 1, 1, 1, 1, 1]
-    position_min_deg: [-180.0, -180.0, -180.0, -180.0, -180.0, -180.0, -180.0]
-    position_max_deg: [180.0, 180.0, 180.0, 180.0, 180.0, 180.0, 180.0]
+    position_min_deg: [-90.0, -20.0, -90.0, -0.0, -90.0, -30.0, -80.0]
+    position_max_deg: [90.0, 120.0, 90.0, 60.0, 90.0, 30.0, 80.0]
     velocity_limit_deg_s: [180.0, 180.0, 180.0, 180.0, 180.0, 180.0, 180.0]
     acceleration_limit_deg_s2: [300.0, 300.0, 300.0, 300.0, 300.0, 300.0, 300.0]
     deceleration_limit_deg_s2: [300.0, 300.0, 300.0, 300.0, 300.0, 300.0, 300.0]

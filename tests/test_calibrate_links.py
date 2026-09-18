@@ -73,8 +73,9 @@ class CalibrationTest(unittest.TestCase):
             for _ in range(5):
                 pose = rng.uniform(-60, 60, 7)
                 sid = len(sweeps)
-                sweeps.append(dict(joint=j, pose_deg=pose.tolist(), range_deg=[-20, 20], points_deg=[-10, 0, 10]))
-                for point in [-10, 0, 10]:
+                sweeps.append(dict(joint=j, pose_deg=pose.tolist(), range_deg=[-20, 20]))
+                sampling_plan = m.validate_plan(dict(sweeps=[sweeps[-1]]), self.cfg)
+                for point in m.sample_points(sweeps[-1], sampling_plan):
                     for direction in [1, -1]:
                         for offset in [-.05, 0, .05]:
                             q = pose.copy(); q[j-1] = point+offset

@@ -67,20 +67,32 @@ python3 calibrate_links.py fit --side \
 
 ## 扫描计划与参数
 
-`plan.yaml` 是第7轴 ±3° 短扫描，便于快速检查流程，末端运动可能不明显。
-`plan_template.yaml` 是带参数解释的空模板。每个任务形如：
+`plan.yaml` 包含各轴基准姿态与扫描范围。每个任务形如：
 
 ```yaml
 sweeps:
   - joint: 6
-    pose_deg: [0, -30, 20, 45, 10, 0, 0]
-    range_deg: [-10, 10]
-    points_deg: [-5, 0, 5]
+    pose_deg: [0, -15, 20, 45, 10, 0, 0]
+    range_deg: [-30, 30]
 ```
 
 `joint` 使用1～7；扫描轴按范围正反向运动，其他轴保持 `pose_deg`。
-可重复同一关节的不同姿态增加信息覆盖。采样点需避开加减速及稳定时间。
-正式验证需增加各轴多姿态扫描，并用独立姿态验证重力矩预测。
+不再填写 `points_deg`：规划和采集统一从有效区间起点按5度间隔取样，自动排除加减速、
+稳定时间及角度窗口所需的端点距离。有效区间至少需要3个采样中心。
+采样窗口仍由 `sample_tolerance_deg` 指定，必须小于2.5度以避免相邻窗口重叠。
+旧配置里的 `points_deg` 会被忽略；旧采集记录按新网格拟合时可能缺少采样。
+
+优化扫描计划（输出文件必须不存在）：
+
+```bash
+python3 optimize_sweeps.py --side --count 21 --output plan_balanced.yaml
+```
+
+`--count` 是7的正整数倍，21表示每轴3组，默认42表示每轴6组。
+先每轴等量贪心初选，再反复尝试同轴候选替换；只接受秩不下降且整体logdet评分
+提升超过1e-9的替换，直到没有可改善的单条交换。输出初始/最终评分、交换次数及秩。
+这是单条交换意义下的局部优化，不保证全局最优，不验证碰撞。
+采集时使用 `--plan plan_balanced.yaml`，并用独立姿态验证重力矩预测。
 
 - **真值**来自本目录 `urdf/coludata_arm.urdf`；网格相对引用本目录 `meshes/`。
 - **先验**来自 `config.yaml` 中的质量与质心，保持现有 `arm_driver/ros__parameters/drag` 数据结构。
