@@ -1,5 +1,29 @@
 # 独立 MuJoCo 质量、质心标定
 
+## 真机单关节往返测量
+
+`calibrate_arm_ros.py` 调用 `calibrate_linksmotion()`，复用 `calibrate_links.motion()` 生成梯形轨迹。
+自动读取当前关节角度，其他关节保持原位，指定关节先到起点，再正反扫描，最终停在起点。
+不读配置、不指定姿态、不保存文件，直接打印中点附近正反向力矩及平均值。
+启动并使能真机驱动后，加载 ROS 2 和驱动工作区环境，执行示例：
+
+```bash
+source /opt/ros/humble/setup.bash
+source /home/wky/MyWorkspace/coludata_arm_ros/install/setup.bash
+python3 calibrate_arm_ros.py --joint 6 --start-deg -10 --end-deg 10 --speed-deg-s 0.5
+```
+
+关节编号 1～7，起止角度为绝对角度（度），速度单位为度/秒。示例测量第 6 关节的 0° 附近力矩。
+关节名称默认 joint1～joint7。扫描范围需按实机设置，限位由驱动检查，不检查碰撞。
+ROS_DOMAIN_ID 应与真机一致。
+脚本不自动使能；异常或 Ctrl+C 时尝试调用 quick_stop。这是简单测试脚本，不做参数校验和反馈超时监测。
+
+- 控制：`/arm_driver/servo_j`，类型 `coludata_arm_ros/action/ServoJ`。
+- 位置/速度：`/joint_states`；力矩：`/arm_driver/torque_permille`。
+- 结果单位为驱动原始千分比（permille），不换算 N·m。
+- 起点需小于终点，速度需为正，范围需留出加减速距离。中点窗口 ±0.15 度，实际速度需在目标速度 ±15% 内。
+  力矩消息没有时间戳，与位置按接收时间近似匹配，正反向在同一个角度窗口内分别取平均。
+
 整个目录可单独复制到其他位置。所有代码、配置、URDF、网格和自定义 ROS 接口都在目录内，
 不需要原机械臂项目、CAN 驱动或原项目的 install。需要安装 ROS 2 Humble（Ubuntu 22.04 / Python 3.10）及下列依赖。
 
