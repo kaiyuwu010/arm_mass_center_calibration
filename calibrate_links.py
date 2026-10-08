@@ -39,7 +39,7 @@ def regressor(q_deg, cfg, g):
     k = cfg["kinematics"]
     origins, axes, rotations = [], [], []
     T = np.eye(4)
-    # 正运动学，计算个关节坐标系相对基坐标系的原点、旋转轴、旋转矩阵
+    # 正运动学，计算第i个关节坐标系相对基坐标系的原点、旋转轴、旋转矩阵
     for i in range(7):
         a = k["a_mm"][i] / 1000.0
         d = k["d_mm"][i] / 1000.0
@@ -51,12 +51,12 @@ def regressor(q_deg, cfg, g):
         axes.append(T[:3, 2].copy())
         rotations.append(T[:3, :3].copy())
     Y = np.zeros((7, 28))
-    # 构造回归矩阵，Y的形状是7X28
+    # 构造回归矩阵，Y的形状是7X28，4X1分块的上三角矩阵
     for j in range(7):
         for l in range(j, 7):
-            Y[j, 4*l] = -axes[j] @ np.cross(origins[l] - origins[j], g)     # 质量系数，1行1列
+            Y[j, 4*l] = -axes[j] @ np.cross(origins[l] - origins[j], g)     # 计算第l个连杆原点处的重力对第j个关节的力矩
             for c in range(3):
-                Y[j, 4*l+c+1] = -axes[j] @ np.cross(rotations[l][:, c], g)  # 质心乘质量的系数，1行1列
+                Y[j, 4*l+c+1] = -axes[j] @ np.cross(rotations[l][:, c], g)  # 计算第l个连杆质心处的重力相对第l个连杆坐标系原点(坐标系方向替换为连杆j坐标系)的力矩
     return Y
 
 # 生成从关节角度q0运动到q1的轨迹，梯形速度曲线; speed: 最大关节速度; ramp: 加减速段各自持续时间; dt: 轨迹采样时间间隔; 单位: deg/s, s
@@ -92,7 +92,7 @@ def sample_points(sweep, plan):
     margin = plan['speed_deg_s']*(plan['ramp_s']/2 + plan['settle_s'] + plan['stable_s']) + plan['sample_tolerance_deg']
     return np.arange(start + margin + 1e-6, end - margin, 5.).tolist()
 
-
+# 验证扫描
 def validate_plan(plan, cfg):
     plan.setdefault("transfer_speed_deg_s", plan.get("speed_deg_s", .5))
     for name, default in (("speed_deg_s", .5), ("transfer_speed_deg_s", .5), ("ramp_s", 3.), ("settle_s", 1.), ("sample_tolerance_deg", .15), ("velocity_tolerance", .15),

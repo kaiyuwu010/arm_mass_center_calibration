@@ -15,7 +15,7 @@ def rank(singular):
     # 必须大于1e-10，或最大奇异值singular[0]的万分之一
     return int(np.sum(singular > max(1e-10, singular[0]*1e-4))) if len(singular) else 0
 
-# 构建回归矩阵，形状为所有扫描的采样点总数×28
+# 构建回归矩阵，形状为: 所有扫描的采样点总数×28
 def matrix(sweeps, cfg, gravity, plan):
     rows = []
     # 遍历扫描
@@ -44,7 +44,7 @@ def information_metrics(info, ridge):
     # values最后一列特征值最大，乘上1e-8后作为阈值，按行计算有效秩
     ranks = np.sum(values > np.maximum(1e-20, values[..., -1:]*1e-8), axis=-1)
     # 计算整体信息量评分，对每个特征值加上小正数ridge，对于特征值为0的情况，避免评分出现负无穷
-    return ranks, np.sum(np.log(values+ridge), axis=-1)
+    return ranks, np.sum(np.log(values + ridge), axis=-1)
 
 # 
 def select_balanced(grams, joints, count):
@@ -116,15 +116,13 @@ def optimize(cfg, plan, gravity, lower, upper, count, candidates, seed):
     # 保留原有候选，并复用各轴的扫描范围，每次扫描只有一个轴运动
     pool = copy.deepcopy(plan['sweeps'])
     templates = {}
-    # 遍历扫描
+    # 遍历扫描，把扫描的关节id、关节运动范围合并作为字典templates的键
     for sweep in pool:
-        # 把扫描的关节id、关节运动范围合并作为字典templates的键
         key = (sweep['joint'], tuple(sweep['range_deg']))
         # 不同的关节位置覆盖同一个键
         templates[key] = sweep
-    # 遍历模板
+    # 遍历模板，在各关节限位内生成随机姿态，共candidates行7列，遍历每行
     for template in templates.values():
-        # 在各关节限位内生成随机姿态，共candidates行7列，遍历每行
         for q in rng.uniform(lower, upper, (candidates, 7)):
             sweep = copy.deepcopy(template)
             # 将随机关节角度限制在范围内，np.nextafter(a, b)表示从浮点数a向b的方向走一点
@@ -132,7 +130,7 @@ def optimize(cfg, plan, gravity, lower, upper, count, candidates, seed):
             # 将新增的扫描加入候选池
             pool.append(sweep)
     unique = {}
-    # 遍历pool的每个扫描
+    # 遍历pool的每个扫描，构建唯一键，去除重复扫描
     for sweep in pool:
         # 将扫描轴的基准角度设置为运动范围的中点
         sweep['pose_deg'][sweep['joint']-1] = sum(sweep['range_deg'])/2
@@ -180,23 +178,26 @@ def format_plan(plan):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=Path, default=ROOT/'config.yaml')
-    parser.add_argument('--plan', type=Path, default=ROOT/'plan.yaml', help='继承速度和各轴扫描范围，自动每5度采样')
+    parser.add_argument('--plan', type=Path, default=ROOT/'plan.yaml', help='继承速度和各轴扫描范围, 自动每5度采样')
     parser.add_argument('--output', type=Path, default=ROOT/'plan_optimized.yaml')
-    parser.add_argument('--side', action='store_true', help='侧装，与采集端一致')
-    parser.add_argument('--count', type=int, default=42, help='扫描总数，必须是7的正整数倍，每轴数量相同')
+    parser.add_argument('--side', action='store_true', help='侧装, 与采集端一致')
+    parser.add_argument('--count', type=int, default=42, help='扫描总数, 必须是7的正整数倍, 每轴数量相同')
     parser.add_argument('--candidates', type=int, default=100, help='每种扫描模板生成的随机姿态数')
     parser.add_argument('--seed', type=int, default=42)
     args = parser.parse_args()
     if args.count < 7 or args.count % 7 or args.candidates < 1:
-        parser.error('--count必须为7的正整数倍，--candidates必须为正整数!!!')
+        parser.error('--count必须为7的正整数倍, --candidates必须为正整数!!!')
     if args.output.exists():
-        parser.error('输出文件已存在，不覆盖!!!')
+        parser.error('输出文件已存在, 不覆盖!!!')
+    # 加载配置文件和原扫描文件
     cfg = load_config(args.config)
     plan = validate_plan(yaml.safe_load(args.plan.read_text()), cfg)
+    # 检查关节上下限
     lower = np.asarray(cfg['position_min_deg'], dtype=float)
     upper = np.asarray(cfg['position_max_deg'], dtype=float)
     if (lower.shape != (7,) or upper.shape != (7,) or not np.isfinite([lower, upper]).all() or np.any(lower >= upper)):
         parser.error('配置中的关节上下限必须为7个有限值,且下限小于上限!!!')
+    # 检查原计划的姿态和扫描范围是否超出关节限位
     for sweep in plan['sweeps']:
         q = np.asarray(sweep['pose_deg'])
         j = sweep['joint']-1
@@ -205,7 +206,8 @@ def main():
     chosen, report = optimize(cfg, plan, gravity_vector(cfg, args.side), lower, upper, args.count, args.candidates, args.seed)
     output = dict(plan, sweeps=chosen)
     validate_plan(output, cfg)
-    header = (f'# 每轴等量、同轴交换D-optimal扫描计划，每5度采样，seed={args.seed}，side={args.side}。\n' '# 仅验证参数信息覆盖与角度限制，未验证碰撞和连接路径；不保证全局最优!!!\n')
+    header = (f'# 每轴等量、同轴交换D-optimal扫描计划, 每5度采样, seed={args.seed}, side={args.side}。\n' '# 仅验证参数信息覆盖与角度限制，未验证碰撞和连接路径；不保证全局最优!!!\n')
+    # 保存优化后的扫描计划
     with args.output.open('x') as f:
         f.write(header+format_plan(output))
     print(yaml.safe_dump(report, sort_keys=False, allow_unicode=True))
