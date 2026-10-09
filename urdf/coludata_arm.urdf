@@ -12,7 +12,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/base_link.STL"/>
+        <mesh filename="package://coludata_arm_ros/meshes/base_link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.51765 0.51765 0.5098 1"/>
@@ -21,7 +21,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/base_link.STL"/>
+        <mesh filename="package://coludata_arm_ros/meshes/base_link.STL"/>
       </geometry>
     </collision>
   </link>
@@ -34,7 +34,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 1.5708"/>
       <geometry>
-        <mesh filename="../meshes/link1.STL"/>
+        <mesh filename="package://coludata_arm_ros/meshes/link1.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.86667 0.9098 1 1"/>
@@ -43,7 +43,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/link1.STL"/>
+        <mesh filename="package://coludata_arm_ros/meshes/link1.STL"/>
       </geometry>
     </collision>
   </link>
@@ -63,7 +63,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/link2.STL"/>
+        <mesh filename="package://coludata_arm_ros/meshes/link2.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.86667 0.9098 1 1"/>
@@ -72,12 +72,12 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/link2.STL"/>
+        <mesh filename="package://coludata_arm_ros/meshes/link2.STL"/>
       </geometry>
     </collision>
   </link>
   <joint name="joint2" type="revolute">
-    <origin xyz="0 0 0" rpy="3.1416 -1.5708 1.5708"/>
+    <origin xyz="0 0 0" rpy="0.0 -1.5708 -1.5708"/>
     <parent link="link1"/>
     <child link="link2"/>
     <axis xyz="0 0 1"/>
@@ -92,7 +92,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/link3.STL"/>
+        <mesh filename="package://coludata_arm_ros/meshes/link3.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.51765 0.51765 0.5098 1"/>
@@ -101,41 +101,42 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/link3.STL"/>
+        <mesh filename="package://coludata_arm_ros/meshes/link3.STL"/>
       </geometry>
     </collision>
   </link>
   <joint name="joint3" type="revolute">
-    <origin xyz="0 0 0" rpy="1.5708 1.5708 0"/>
+    <origin xyz="0 0 0" rpy="1.5708 -1.5708 0"/>
     <parent link="link2"/>
     <child link="link3"/>
     <axis xyz="0 0 1"/>
     <limit lower="-3.14159" upper="3.14159" effort="100" velocity="1.0"/>
   </joint>
+  <!-- link4 绕自身 Y 轴翻转 180°；补偿几何、惯性及相邻关节以保持物理姿态。 -->
   <link name="link4">
     <inertial>
-      <origin xyz="-2.5929E-05 -0.060052 -0.0080512" rpy="0 0 0"/>
+      <origin xyz="2.5929E-05 -0.060052 0.0080512" rpy="0 3.141592653589793 0"/>
       <mass value="0.15961"/>
       <inertia ixx="7.1845E-05" ixy="7.4946E-08" ixz="-2.092E-08" iyy="6.7499E-05" iyz="-9.068E-07" izz="9.8335E-05"/>
     </inertial>
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 3.141592653589793 0"/>
       <geometry>
-        <mesh filename="../meshes/link4.STL"/>
+        <mesh filename="package://coludata_arm_ros/meshes/link4.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.86667 0.9098 1 1"/>
       </material>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 3.141592653589793 0"/>
       <geometry>
-        <mesh filename="../meshes/link4.STL"/>
+        <mesh filename="package://coludata_arm_ros/meshes/link4.STL"/>
       </geometry>
     </collision>
   </link>
   <joint name="joint4" type="revolute">
-    <origin xyz="0 0 0.3115" rpy="-1.5708 0 0"/>
+    <origin xyz="0 0 0.3115" rpy="1.5708 3.141592653589793 0"/>
     <parent link="link3"/>
     <child link="link4"/>
     <axis xyz="0 0 1"/>
@@ -150,7 +151,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/link5.STL"/>
+        <mesh filename="package://coludata_arm_ros/meshes/link5.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.51765 0.51765 0.5098 1"/>
@@ -159,12 +160,12 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/link5.STL"/>
+        <mesh filename="package://coludata_arm_ros/meshes/link5.STL"/>
       </geometry>
     </collision>
   </link>
   <joint name="joint5" type="revolute">
-    <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+    <origin xyz="0 0 0" rpy="1.5708 3.141592653589793 0"/>
     <parent link="link4"/>
     <child link="link5"/>
     <axis xyz="0 0 1"/>
@@ -179,7 +180,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/link6.STL"/>
+        <mesh filename="package://coludata_arm_ros/meshes/link6.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.86667 0.9098 1 1"/>
@@ -188,7 +189,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/link6.STL"/>
+        <mesh filename="package://coludata_arm_ros/meshes/link6.STL"/>
       </geometry>
     </collision>
   </link>
@@ -208,7 +209,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/link7.STL"/>
+        <mesh filename="package://coludata_arm_ros/meshes/link7.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.51765 0.51765 0.5098 1"/>
@@ -217,7 +218,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="../meshes/link7.STL"/>
+        <mesh filename="package://coludata_arm_ros/meshes/link7.STL"/>
       </geometry>
     </collision>
   </link>

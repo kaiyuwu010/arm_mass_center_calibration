@@ -1,37 +1,13 @@
-# 独立 MuJoCo 质量、质心标定
+# 机械臂质量、质心标定
 
-## 真机单关节往返测量
+使用 MuJoCo 和 ROS 2 仿真采集关节力矩，再拟合连杆质量与质心。支持正装、侧装，以及扫描计划优化。
 
-`calibrate_arm_ros.py` 调用 `calibrate_linksmotion()`，复用 `calibrate_links.motion()` 生成梯形轨迹。
-自动读取当前关节角度，其他关节保持原位，指定关节先到起点，再正反扫描，最终停在起点。
-不读配置、不指定姿态、不保存文件，直接打印中点附近正反向力矩及平均值。
-启动并使能真机驱动后，加载 ROS 2 和驱动工作区环境，执行示例：
+## 1. 首次安装
 
-```bash
-source /opt/ros/humble/setup.bash
-source /home/wky/MyWorkspace/coludata_arm_ros/install/setup.bash
-python3 calibrate_arm_ros.py --joint 6 --start-deg -10 --end-deg 10 --speed-deg-s 0.5
-```
-
-关节编号 1～7，起止角度为绝对角度（度），速度单位为度/秒。示例测量第 6 关节的 0° 附近力矩。
-关节名称默认 joint1～joint7。扫描范围需按实机设置，限位由驱动检查，不检查碰撞。
-ROS_DOMAIN_ID 应与真机一致。
-脚本不自动使能；异常或 Ctrl+C 时尝试调用 quick_stop。这是简单测试脚本，不做参数校验和反馈超时监测。
-
-- 控制：`/arm_driver/servo_j`，类型 `coludata_arm_ros/action/ServoJ`。
-- 位置/速度：`/joint_states`；力矩：`/arm_driver/torque_permille`。
-- 结果单位为驱动原始千分比（permille），不换算 N·m。
-- 起点需小于终点，速度需为正，范围需留出加减速距离。中点窗口 ±0.15 度，实际速度需在目标速度 ±15% 内。
-  力矩消息没有时间戳，与位置按接收时间近似匹配，正反向在同一个角度窗口内分别取平均。
-
-整个目录可单独复制到其他位置。所有代码、配置、URDF、网格和自定义 ROS 接口都在目录内，
-不需要原机械臂项目、CAN 驱动或原项目的 install。需要安装 ROS 2 Humble（Ubuntu 22.04 / Python 3.10）及下列依赖。
-
-## 1. 安装依赖和构建接口
-
-以下命令在复制后的 `simulation` 目录中执行：
+需要 Ubuntu 22.04、ROS 2 Humble。以下命令均在项目根目录执行：
 
 ```bash
+cd /home/wky/MyWorkspace/arm_mass_center_calibration
 sudo apt install python3-venv python3-pip python3-colcon-common-extensions \
   ros-humble-rclpy ros-humble-rosidl-default-generators \
   ros-humble-sensor-msgs ros-humble-std-msgs ros-humble-std-srvs \
@@ -43,14 +19,14 @@ source .venv/bin/activate
 python3 -m pip install -r requirements.txt
 ```
 
-使用与系统 ROS 一致的 Python。接口首次运行前构建一次即可。
-复制目录到新位置后重新构建接口和虚拟环境，不要沿用旧位置的 `build/`、`install/`、`log/`、`.venv/`。
+接口和虚拟环境只需准备一次。若移动或复制项目，请在新目录重新构建接口和虚拟环境。
 
-## 2. 启动仿真与采集
+## 2. 运行仿真与标定
 
-两个终端均进入此目录，并执行：
+打开两个终端，**两个终端都执行**：
 
 ```bash
+cd /home/wky/MyWorkspace/arm_mass_center_calibration
 source /opt/ros/humble/setup.bash
 source install/local_setup.bash
 source .venv/bin/activate
@@ -58,40 +34,60 @@ export ROS_DOMAIN_ID=173
 export ROS_LOCALHOST_ONLY=1
 ```
 
-终端一：
+**终端一：启动仿真**
 
 ```bash
 python3 mujoco_arm.py --side --mass-scale 1.1 --viewer
 ```
 
-无桌面环境时去掉 `--viewer`。默认关节角度全为零。
+- `--side`：侧装；正装时仿真、采集和优化命令都去掉此参数。
+- `--mass-scale 1.1`：仿真质量和惯量乘以 1.1，质心及标定先验不变；默认倍率为 1。
+- `--viewer`：打开可视化窗口，无桌面环境时去掉。
 
-终端二：
+**终端二：执行扫描、采集并自动拟合**
 
 ```bash
-python3 calibrate_links.py collect --side --config config.yaml --plan plan.yaml --output run_01
+python3 calibrate_links.py collect --side \
+  --config config.yaml --plan plan.yaml --output run_01
 ```
 
-输出目录必须不存在；再次运行换成 `run_02` 等。采集完成后自动拟合，输出：
+输出目录必须不存在，再次运行请改为 `run_02` 等。主要结果：
 
-- `raw.jsonl`：稳定段位置（deg）、速度（deg/s）、原始千分比力矩。
-- `inputs.yaml`：本次配置、计划、重力快照。
-- `paired.csv`：配对平均后的力矩。
-- `report.json`：参数、有效秩、奇异值和力矩拟合误差。
-- `candidate_drag.yaml`：质量为正时输出的候选质量、质心。
+| 文件 | 内容 |
+|---|---|
+| `raw.jsonl` | 采集的位置、速度和原始千分比力矩 |
+| `inputs.yaml` | 本次配置、扫描计划和重力快照 |
+| `paired.csv` | 正反向配对平均后的力矩 |
+| `report.json` | 拟合参数、有效秩、奇异值和力矩误差 |
+| `candidate_drag.yaml` | 质量为正时输出的候选质量、质心 |
 
-仅重新拟合（不启动仿真、不需要ROS接口）：
+仅重新拟合已有数据，无需启动仿真：
 
 ```bash
 python3 calibrate_links.py fit --side \
-  --config config.yaml --plan plan.yaml --data run_01/raw.jsonl --output fit_01
+  --config config.yaml --plan plan.yaml \
+  --data run_01/raw.jsonl --output fit_01
 ```
 
-使用采集时相同的配置、计划及安装方向。正装时仿真和标定命令均去掉 `--side`。
+重新拟合须使用采集时相同的配置、计划和安装方向。
 
-## 扫描计划与参数
+## 3. 扫描计划优化
 
-`plan.yaml` 包含各轴基准姿态与扫描范围。每个任务形如：
+```bash
+python3 optimize_sweeps.py --side --count 21 --output plan_balanced.yaml
+```
+
+`--count` 必须是 7 的正整数倍，21 表示每个关节 3 组扫描，默认 42。
+输出文件必须不存在。优化先按各轴等量贪心选择，再尝试同轴替换，以有效秩和正则化 logdet 评分筛选计划；结果是局部最优，不保证全局最优。
+
+采集时使用优化后的计划：
+
+```bash
+python3 calibrate_links.py collect --side \
+  --config config.yaml --plan plan_balanced.yaml --output run_02
+```
+
+`plan.yaml` 中每组扫描指定关节、基准姿态和范围，例如：
 
 ```yaml
 sweeps:
@@ -100,57 +96,38 @@ sweeps:
     range_deg: [-30, 30]
 ```
 
-`joint` 使用1～7；扫描轴按范围正反向运动，其他轴保持 `pose_deg`。
-不再填写 `points_deg`：规划和采集统一从有效区间起点按5度间隔取样，自动排除加减速、
-稳定时间及角度窗口所需的端点距离。有效区间至少需要3个采样中心。
-采样窗口仍由 `sample_tolerance_deg` 指定，必须小于2.5度以避免相邻窗口重叠。
-旧配置里的 `points_deg` 会被忽略；旧采集记录按新网格拟合时可能缺少采样。
+关节编号为 1～7，角度单位为度。扫描轴正反向运动，其他轴保持基准姿态。
+有效区间按 5° 间隔采样，自动排除加减速等端点区域，至少需要 3 个采样中心。
+`sample_tolerance_deg` 必须小于 2.5°；旧的 `points_deg` 配置会被忽略。
 
-优化扫描计划（输出文件必须不存在）：
+## 4. 真机单关节力矩测量
+
+启动并使能真机驱动后，在新的终端加载 ROS 和驱动环境：
 
 ```bash
-python3 optimize_sweeps.py --side --count 21 --output plan_balanced.yaml
+cd /home/wky/MyWorkspace/arm_mass_center_calibration
+source /opt/ros/humble/setup.bash
+source /home/wky/MyWorkspace/coludata_arm_ros/install/setup.bash
+python3 calibrate_motor_torque_ros.py \
+  --joint 6 --start-deg -10 --end-deg 10 --speed-deg-s 0.5
 ```
 
-`--count` 是7的正整数倍，21表示每轴3组，默认42表示每轴6组。
-先每轴等量贪心初选，再反复尝试同轴候选替换；只接受秩不下降且整体logdet评分
-提升超过1e-9的替换，直到没有可改善的单条交换。输出初始/最终评分、交换次数及秩。
-这是单条交换意义下的局部优化，不保证全局最优，不验证碰撞。
-采集时使用 `--plan plan_balanced.yaml`，并用独立姿态验证重力矩预测。
+自动读取当前姿态，其他关节保持原位，指定关节往返扫描后停在起点。
+结果直接打印，单位为驱动原始千分比（permille），不换算 N·m、不保存文件。
+起点需小于终点，速度需为正，范围需留出加减速距离。脚本不自动使能、不检查碰撞，异常时尝试调用 `quick_stop`。
+ROS_DOMAIN_ID 应与真机一致；真机脚本使用 `coludata_arm_ros` 接口，仿真使用独立的 `arm_calibration_interfaces` 接口。
 
-- **真值**来自本目录 `urdf/coludata_arm.urdf`；网格相对引用本目录 `meshes/`。
-- **先验**来自 `config.yaml` 中的质量与质心，保持现有 `arm_driver/ros__parameters/drag` 数据结构。
-- `--mass-scale 1.1` 仅将仿真质量与惯量乘1.1，质心不变，先验不变。
-- 可复制URDF修改真实质心，再通过 `--urdf 文件路径` 加载；不会写入原URDF。
-- URDF与MDH部分连杆坐标原点不同，不能直接逐项比较两者质心坐标。
-- 拟合变量是每根连杆 `[m, mcx, mcy, mcz]`。SVD只修正可观测方向，其他方向保留先验。
-  因此候选参数不代表所有连杆质量、质心被独立测准；质量变化可能表现为拟合质心变化。
-- `config.yaml` 的50千分比/N·m是仿真编码系数，不能用作真机配置。
+## 说明与测试
 
-## 最小 ROS 接口
+- 仿真真值来自 `urdf/coludata_arm.urdf`，先验来自 `config.yaml`；可用 `--urdf 文件路径` 加载修改后的模型。
+- 拟合每根连杆的 `[m, mcx, mcy, mcz]`，仅修正可观测方向，其他方向保留先验。候选参数不代表所有连杆质量、质心都能独立测准。
+- URDF 与 MDH 的部分坐标原点不同，质心坐标不能直接逐项比较。
+- `config.yaml` 中 50 千分比/N·m 是仿真编码系数，不能用于真机。
+- 仿真步长为 2 ms，采用理想力矩源，关闭碰撞，不模拟摩擦、传感器噪声或电机限幅。扫描计划也不验证碰撞。
+- 仿真接口：`/arm_driver/servo_j`、`/arm_driver/quick_stop`、`/joint_states`、`/arm_driver/torque_permille`。
 
-| 名称 | 类型 |
-|---|---|
-| `/arm_driver/servo_j` | `arm_calibration_interfaces/action/ServoJ` |
-| `/arm_driver/quick_stop` | `std_srvs/srv/Trigger` |
-| `/joint_states` | `sensor_msgs/msg/JointState`（rad、rad/s、N·m） |
-| `/arm_driver/torque_permille` | `std_msgs/msg/Float64MultiArray` |
-
-接口包在 `ros/arm_calibration_interfaces` 中，仿真和采集端均使用它。
-它与原驱动接口字段相同但包名不同，不能直接连接原驱动的action服务器。
-`--namespace`、`--joint-states` 可更改接口名称，两端传相同参数即可。
-不发布TF，不需要使能服务，使用独立ROS域避免与真机接口冲突。
-
-## 仿真边界与测试
-
-固定2 ms物理步长、墙钟实时运行。位置轨迹线性插值，MuJoCo逆动力学加PD计算施加力矩，
-再通过正向动力学积分；没有使用标定回归矩阵生成反馈。
-采用理想力矩源，不模拟电机限幅、摩擦、传感器噪声；关闭碰撞。
-`quick_stop` 立即清零速度并保持位置，不代表真实制动过程。
+运行测试：
 
 ```bash
 python3 -m unittest discover -s tests -p 'test_*.py'
 ```
-
-测试覆盖回归参考值、梯形轨迹、正反向配对、欠秩拟合、离线入口及无效计划拒绝。
-实际摩擦、反馈延迟及真实机械臂运动安全不在本仿真验证范围内。

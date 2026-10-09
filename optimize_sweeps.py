@@ -38,15 +38,16 @@ def metrics(A, basis):
                 min_singular=float(singular[-1]) if len(singular) >= basis.shape[1] else 0.,    # 最小奇异值
                 condition=float(singular[0]/singular[-1]) if r == basis.shape[1] else None)     # 最大最小奇异值的比
 
-# 信息矩阵特征值是回归矩阵奇异值的平方，评分使用正则化logdet
+# 信息矩阵特征值是回归矩阵奇异值的平方
 def information_metrics(info, ridge):
+    # 计算特征值，按照升序排列，将负值截断为0
     values = np.maximum(np.linalg.eigvalsh(info), 0.)
-    # values最后一列特征值最大，乘上1e-8后作为阈值，按行计算有效秩
+    # values最大特征值乘上1e-8后作为阈值，对有效秩求和
     ranks = np.sum(values > np.maximum(1e-20, values[..., -1:]*1e-8), axis=-1)
     # 计算整体信息量评分，对每个特征值加上小正数ridge，对于特征值为0的情况，避免评分出现负无穷
     return ranks, np.sum(np.log(values + ridge), axis=-1)
 
-# 
+# 选择平衡的扫描，保证每个关节的扫描数量相同
 def select_balanced(grams, joints, count):
     if count < 7 or count % 7 or set(joints) != set(range(1, 8)):
         raise ValueError('必须提供7个轴的候选, 且count为7的正整数倍!!!')
@@ -140,14 +141,14 @@ def optimize(cfg, plan, gravity, lower, upper, count, candidates, seed):
     # 重新赋值给pool
     pool = list(unique.values())
     validate_plan(dict(plan, sweeps=pool), cfg)
-    # 从pool里取出轨迹构建回归矩阵的行，投影到basis，blocks的形状是: 扫描数 X (每条扫描采样数 X r)
+    # 从pool里取出轨迹构建回归矩阵的行，投影到basis，blocks的形状是: 扫描数 X(每条扫描采样数 X r)
     blocks = [matrix([s], cfg, gravity, plan) @ basis for s in pool]
     # 检查候选扫描的秩是否小于r
     if rank(np.linalg.svd(np.vstack(blocks), compute_uv=False)) < r:
         raise ValueError('候选扫描不能覆盖目标秩，请增加候选数量、姿态范围或扫描轴!!!')
     if count > len(pool):
         raise ValueError('扫描数量超过不重复候选数量!!!')
-    # 构造信息矩阵，b的形状是: (每条扫描采样点数, r)，grams的形状是: (扫描数, r, r)
+    # 构造信息矩阵，b的形状是:(每条扫描采样点数, r)，grams的形状是:(扫描数, r, r)
     grams = np.array([b.T @ b for b in blocks])
     indices, exchange = select_balanced(grams, np.array([s['joint'] for s in pool]), count)
     chosen = [pool[i] for i in indices]
