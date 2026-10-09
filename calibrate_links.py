@@ -113,14 +113,18 @@ def validate_plan(plan, cfg):
     if not plan.get("sweeps"):
         raise ValueError("需在计划文件sweeps中填写已确认可达且无碰撞的姿态与扫描区间!!!")
     lo, hi = np.asarray(cfg["position_min_deg"]), np.asarray(cfg["position_max_deg"])
-    for sweep in plan["sweeps"]:
+    for sweep_id, sweep in enumerate(plan["sweeps"]):
         j = sweep["joint"] - 1
         q = np.asarray(sweep["pose_deg"], dtype=float)
         start, end = sweep["range_deg"]
         if not 0 <= j < 7 or q.shape != (7,) or not np.isfinite(q).all():
             raise ValueError("joint使用1~7, pose_deg必须有7个有限角度!!!")
-        if not np.all((q > lo) & (q < hi)) or not lo[j] < start < end < hi[j]:
-            raise ValueError("姿态或扫描范围超出关节限制!!!")
+        invalid = np.flatnonzero((q <= lo) | (q >= hi))
+        if len(invalid):
+            details = "; ".join(f"关节{i + 1}: {q[i]:g}°, 要求 {lo[i]:g}° < 位置 < {hi[i]:g}°" for i in invalid)
+            raise ValueError(f"扫描{sweep_id}基准姿态超出关节限制: {details}")
+        if not lo[j] < start < end < hi[j]:
+            raise ValueError(f"扫描{sweep_id}关节{j + 1}范围超出关节限制: 要求 {lo[j]:g}° < {start:g}° < {end:g}° < {hi[j]:g}°")
         if plan['sample_tolerance_deg'] >= 2.5:
             raise ValueError('5度采样间隔要求sample_tolerance_deg小于2.5，避免窗口重叠')
         if not math.isfinite(start) or not math.isfinite(end) or len(sample_points(sweep, plan)) < 3:
@@ -367,8 +371,12 @@ def collect(args, cfg, plan, output):
         nonlocal active, context, stable_since, previous_v
         if not np.isfinite(q0).all() or not np.isfinite(q1).all():
             raise ValueError("起止位置必须有限!!!")
-        if np.any(q0 <= np.asarray(cfg["position_min_deg"])) or np.any(q0 >= np.asarray(cfg["position_max_deg"])):
-            raise ValueError("当前位置超出配置范围!!!")
+        lower = np.asarray(cfg["position_min_deg"])
+        upper = np.asarray(cfg["position_max_deg"])
+        outside = np.flatnonzero((q0 <= lower) | (q0 >= upper))
+        if len(outside):
+            details = "; ".join(f"关节{i + 1}: {q0[i]:.6f}°, 要求 {lower[i]:g}° < 位置 < {upper[i]:g}°" for i in outside)
+            raise ValueError(f"当前位置超出配置范围: {details}")
         if np.max(np.abs(latest["state"][2])) > .1:
             raise RuntimeError("请待机械臂静止后开始下一段!!!")
         # 姿态切换使用独立速度；扫描仍按标定速度运动。
@@ -458,7 +466,7 @@ def main():
     parser.add_argument("mode", choices=["collect", "fit"])
     parser.add_argument("--config", required=True, type=Path)
     parser.add_argument("--plan", required=True, type=Path)
-    parser.add_argument("--output", required=True, type=Path, help="新建结果目录，不覆盖已有目录")
+    parser.add_argument("--output", required=True, type=Path, help="结果目录，同名结果文件会覆盖")
     parser.add_argument("--data", type=Path, help="fit模式的raw.jsonl")
     parser.add_argument("--side", action="store_true", help="侧装, 使用drag.side_gravity")
     parser.add_argument("--namespace", default="/arm_driver")
@@ -472,7 +480,9 @@ def main():
     g = gravity_vector(cfg, args.side)
     if args.mode == "fit" and args.data is None:
         parser.error("fit需要--data")
-    args.output.mkdir(parents=True, exist_ok=False)
+    args.output.mkdir(parents=True, exist_ok=True)
+    # 本次拟合可能不生成候选参数，清除旧文件以免误用旧结果。
+    (args.output/"candidate_drag.yaml").unlink(missing_ok=True)
     (args.output/"inputs.yaml").write_text(yaml.safe_dump({"config": cfg, "plan": plan, "gravity": g.tolist()}, allow_unicode=True))
     # 收集数据
     raw = collect(args, cfg, plan, args.output) if args.mode == "collect" else [json.loads(line) for line in args.data.read_text().splitlines() if line.strip()]

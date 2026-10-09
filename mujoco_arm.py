@@ -24,6 +24,13 @@ ROOT = Path(__file__).resolve().parent
 
 def load_model(path, names, side=False, mass_scale=1.):
     root = ET.parse(path).getroot()
+    if side:
+        # 横杆左端侧装：基座局部x轴朝上，局部z轴朝横杆外侧。
+        ET.SubElement(root, 'link', name='mount_link')
+        mount = ET.SubElement(root, 'joint', name='side_mount', type='fixed')
+        ET.SubElement(mount, 'parent', link='mount_link')
+        ET.SubElement(mount, 'child', link='base_link')
+        ET.SubElement(mount, 'origin', xyz='-0.4 0 0', rpy=f'0 {-np.pi / 2} 0')
     # 直接读已有URDF，只在内存中解析网格路径并保留可视几何
     assets = {}
     for mesh in root.iter('mesh'):
@@ -42,10 +49,14 @@ def load_model(path, names, side=False, mass_scale=1.):
     spec.add_texture(name='floor', type=mujoco.mjtTexture.mjTEXTURE_2D, builtin=mujoco.mjtBuiltin.mjBUILTIN_CHECKER, rgb1=[.85, .85, .85], rgb2=[1, 1, 1], width=64, height=64)
     floor = spec.add_material(name='floor', texrepeat=[5, 5], texuniform=True)
     floor.textures[mujoco.mjtTextureRole.mjTEXROLE_RGB] = 'floor'
-    # 0.3×0.3×1m底座柱，柱顶位于基座原点z=0；地面移到柱底。
+    # 0.1×0.1×1m立柱，柱顶z=0；侧装时横杆延伸到x=-0.4m。
     spec.worldbody.add_geom(name='pedestal', type=mujoco.mjtGeom.mjGEOM_BOX,
                             size=[.05, .05, .5], pos=[0, 0, -.5],
                             rgba=[.55, .57, .60, 1], contype=0, conaffinity=0)
+    if side:
+        spec.worldbody.add_geom(name='crossbar', type=mujoco.mjtGeom.mjGEOM_BOX,
+                                size=[.2, .05, .05], pos=[-.2, 0, 0],
+                                rgba=[.55, .57, .60, 1], contype=0, conaffinity=0)
     spec.worldbody.add_geom(name='floor', type=mujoco.mjtGeom.mjGEOM_PLANE, size=[2, 2, .1], pos=[0, 0, -1.0], material='floor', contype=0, conaffinity=0)
     # 生成模型
     model = spec.compile()
@@ -54,7 +65,7 @@ def load_model(path, names, side=False, mass_scale=1.):
     if [model.joint(i).name for i in range(7)] != names:
         raise ValueError('URDF关节顺序与配置不一致!!!')
     model.opt.timestep = .002                                           # 每调用一次mj_step()，仿真时间推进2ms
-    model.opt.gravity[:] = [-9.81, 0, 0] if side else [0, 0, -9.81]     # 设置世界坐标系下重力加速度
+    model.opt.gravity[:] = [0, 0, -9.81]                                # 世界重力始终向下
     model.geom_contype[:] = 0                                           # 碰撞类型设为0
     model.geom_conaffinity[:] = 0                                       # 碰撞匹配掩码设为0
     # 可改变仿真真值，拟合先验仍来自配置，同时缩放惯量以保持一致
@@ -76,8 +87,16 @@ class ArmSimulation(Node):
         if self.scale.shape != (7,) or not np.all(np.isfinite(self.scale) & (self.scale > 0)):
             raise ValueError('仿真配置的torque_permille_per_nm必须为7个正数!!!')
         self.model, self.data = load_model(args.urdf, self.names, args.side, args.mass_scale)
+        # 保留范围内的零位；零位在限位上或范围外时，从区间中点启动。
+        lower = np.asarray(cfg['position_min_deg'], dtype=float)
+        upper = np.asarray(cfg['position_max_deg'], dtype=float)
+        initial_deg = np.where((lower < 0) & (upper > 0), 0., (lower + upper) / 2)
+        self.data.qpos[:] = np.radians(initial_deg)
         if args.side:
-            self.model.opt.gravity[:] = cfg['drag']['side_gravity']
+            # 配置给出基座坐标系重力，绕世界Y轴-90°后转换到世界坐标系。
+            gx, gy, gz = cfg['drag']['side_gravity']
+            self.model.opt.gravity[:] = [ -gz, gy, gx ]
+        mujoco.mj_forward(self.model, self.data)
         self.target = self.data.qpos.copy()
         self.busy = False
         self.pending = None
@@ -100,8 +119,8 @@ class ArmSimulation(Node):
         # 可视化
         self.viewer = None
         if args.viewer:
-            import mujoco.viewer
-            self.viewer = mujoco.viewer.launch_passive(self.model, self.data)
+            from mujoco import viewer
+            self.viewer = viewer.launch_passive(self.model, self.data)
         self.get_logger().info(f'仿真就绪：{ns}/servo_j, 真值来自 {args.urdf}')
 
     # 轨迹接收检查

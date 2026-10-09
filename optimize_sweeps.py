@@ -188,8 +188,6 @@ def main():
     args = parser.parse_args()
     if args.count < 7 or args.count % 7 or args.candidates < 1:
         parser.error('--count必须为7的正整数倍, --candidates必须为正整数!!!')
-    if args.output.exists():
-        parser.error('输出文件已存在, 不覆盖!!!')
     # 加载配置文件和原扫描文件
     cfg = load_config(args.config)
     plan = validate_plan(yaml.safe_load(args.plan.read_text()), cfg)
@@ -208,8 +206,8 @@ def main():
     output = dict(plan, sweeps=chosen)
     validate_plan(output, cfg)
     header = (f'# 每轴等量、同轴交换D-optimal扫描计划, 每5度采样, seed={args.seed}, side={args.side}。\n' '# 仅验证参数信息覆盖与角度限制，未验证碰撞和连接路径；不保证全局最优!!!\n')
-    # 保存优化后的扫描计划
-    with args.output.open('x') as f:
+    # 优化和校验成功后保存，覆盖已有同名文件。
+    with args.output.open('w') as f:
         f.write(header+format_plan(output))
     print(yaml.safe_dump(report, sort_keys=False, allow_unicode=True))
     print(f'已写入{args.output}，共{len(chosen)}次扫描；条件数越小、最小奇异值越大越好。')
