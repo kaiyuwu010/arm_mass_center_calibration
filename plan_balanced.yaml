@@ -7,7 +7,7 @@ settle_s: 0.2
 stable_s: 0.2
 velocity_tolerance: 0.15
 sample_tolerance_deg: 0.8
-hold_tolerance_deg: 0.2
+hold_tolerance_deg: 1.5
 min_samples: 3
 feedback_timeout_s: 1.0
 sweeps:

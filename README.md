@@ -4,7 +4,7 @@
 
 ## 1. 首次安装
 
-需要 Ubuntu 22.04、ROS 2 Humble。以下命令均在项目根目录执行：
+需要 Ubuntu 22.04、ROS 2 Humble，以及已构建的 `coludata_arm_ros` 工作区（提供 `ServoJ` 接口）。以下命令均在项目根目录执行：
 
 ```bash
 cd /home/wky/MyWorkspace/arm_mass_center_calibration
@@ -13,13 +13,13 @@ sudo apt install python3-venv python3-pip python3-colcon-common-extensions \
   ros-humble-sensor-msgs ros-humble-std-msgs ros-humble-std-srvs \
   ros-humble-trajectory-msgs
 source /opt/ros/humble/setup.bash
-./build_interfaces.sh
+source /home/wky/MyWorkspace/coludata_arm_ros/install/setup.bash
 /usr/bin/python3 -m venv --system-site-packages .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements.txt
 ```
 
-接口和虚拟环境只需准备一次。若移动或复制项目，请在新目录重新构建接口和虚拟环境。
+虚拟环境只需准备一次。若移动或复制项目，请在新目录重新创建虚拟环境。`build_interfaces.sh` 构建的是旧接口，当前采集和仿真不再使用它。
 
 ## 2. 运行仿真与标定
 
@@ -28,7 +28,7 @@ python3 -m pip install -r requirements.txt
 ```bash
 cd /home/wky/MyWorkspace/arm_mass_center_calibration
 source /opt/ros/humble/setup.bash
-source install/local_setup.bash
+source /home/wky/MyWorkspace/coludata_arm_ros/install/setup.bash
 source .venv/bin/activate
 export ROS_DOMAIN_ID=173
 export ROS_LOCALHOST_ONLY=1
@@ -117,7 +117,7 @@ python3 calibrate_motor_torque_ros.py \
 自动读取当前姿态，其他关节保持原位，指定关节往返扫描后停在起点。
 结果直接打印，单位为驱动原始千分比（permille），不换算 N·m、不保存文件。
 起点需小于终点，速度需为正，范围需留出加减速距离。脚本不自动使能、不检查碰撞，异常时尝试调用 `quick_stop`。
-ROS_DOMAIN_ID 应与真机一致；真机脚本使用 `coludata_arm_ros` 接口，仿真使用独立的 `arm_calibration_interfaces` 接口。
+真机测量与采集的 ROS_DOMAIN_ID 应与驱动一致；仿真和采集均使用 `coludata_arm_ros/action/ServoJ` 接口。仿真使用独立的 ROS_DOMAIN_ID，避免与真机同名接口冲突。
 
 ## 说明与测试
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+from collections import deque
 import csv
 import json
 import math
@@ -243,13 +244,14 @@ def collect(args, cfg, plan, output):
     from std_msgs.msg import Float64MultiArray
     from std_srvs.srv import Trigger
     from trajectory_msgs.msg import JointTrajectoryPoint
-    from arm_calibration_interfaces.action import ServoJ
+    from coludata_arm_ros.action import ServoJ
 
     rclpy.init(signal_handler_options=SignalHandlerOptions.NO)
     node = rclpy.create_node("calibrate_links")
     client = ActionClient(node, ServoJ, args.namespace + "/servo_j")
     stop = node.create_client(Trigger, args.namespace + "/quick_stop")
     latest = {"state": None, "torque": None}
+    position_window = deque()
     active = None
     raw = []
     context = None
@@ -268,6 +270,11 @@ def collect(args, cfg, plan, output):
             return
         # 更新最近数据，state包括当前时间、位置、速度
         latest["state"] = (time.monotonic(), np.degrees([msg.position[i] for i in idx]), np.degrees([msg.velocity[i] for i in idx]))
+        stamp, positions, _ = latest["state"]
+        position_window.append((stamp, positions.copy()))
+        # 保留覆盖最近0.5秒的样本，包括窗口边界前的最后一帧。
+        while len(position_window) > 2 and position_window[1][0] <= stamp - .5:
+            position_window.popleft()
 
     # 力矩回调函数
     def torque_cb(msg):
@@ -369,6 +376,33 @@ def collect(args, cfg, plan, output):
     # 控制机械臂运动
     def run(q0, q1, scan=None):
         nonlocal active, context, stable_since, previous_v
+        # 根据新收集的0.5秒位置窗口判断静止，避免原始速度噪声误判。
+        deadline = time.monotonic() + 5.
+        position_window.clear()
+        spread = np.full(7, np.nan)
+        while rclpy.ok():
+            rclpy.spin_once(node, timeout_sec=.02)
+            if failure:
+                raise RuntimeError(failure)
+            now = time.monotonic()
+            state = latest["state"]
+            if state is None or now - state[0] > plan["feedback_timeout_s"]:
+                raise RuntimeError("等待静止时关节反馈中断")
+            if not np.isfinite(np.r_[state[1], state[2]]).all():
+                raise RuntimeError("关节反馈包含无效位置或速度")
+            if len(position_window) >= 3:
+                positions = np.asarray([item[1] for item in position_window])
+                spread = np.ptp(positions, axis=0)
+                duration = position_window[-1][0] - position_window[0][0]
+                if duration >= .5 and np.all(spread <= .5):
+                    break
+            if now >= deadline:
+                details = ", ".join(f"关节{i + 1}: {value:.4f}" for i, value in enumerate(spread))
+                raise RuntimeError(f"等待静止超时（5秒），要求0.5秒内各轴位置极差≤0.5°；当前极差（°）：{details}")
+        if not rclpy.ok():
+            raise RuntimeError("ROS已停止")
+        if scan is None:
+            q0 = latest["state"][1].copy()
         if not np.isfinite(q0).all() or not np.isfinite(q1).all():
             raise ValueError("起止位置必须有限!!!")
         lower = np.asarray(cfg["position_min_deg"])
@@ -377,10 +411,14 @@ def collect(args, cfg, plan, output):
         if len(outside):
             details = "; ".join(f"关节{i + 1}: {q0[i]:.6f}°, 要求 {lower[i]:g}° < 位置 < {upper[i]:g}°" for i in outside)
             raise ValueError(f"当前位置超出配置范围: {details}")
-        if np.max(np.abs(latest["state"][2])) > .1:
-            raise RuntimeError("请待机械臂静止后开始下一段!!!")
         # 姿态切换使用独立速度；扫描仍按标定速度运动。
         speed = plan["transfer_speed_deg_s"] if scan is None else plan["speed_deg_s"]
+        acceleration_limit = min(cfg["acceleration_limit_deg_s2"] + cfg["deceleration_limit_deg_s2"])
+        if scan is None:
+            distance = float(np.max(np.abs(q1 - q0)))
+            if distance >= 1e-10:
+                # 短距离三角轨迹的加速度为speed²/distance，自动限制切换速度。
+                speed = min(speed, math.sqrt(acceleration_limit * distance) * .999999)
         # 控制周期转为ms
         dt = cfg["control_period_ms"]/1000.
         if not .002 <= dt <= .1:
@@ -389,7 +427,7 @@ def collect(args, cfg, plan, output):
             raise ValueError("轨迹超过20万点, 请缩短移动距离或分段执行!!!")
         # 根据梯形速度规划轨迹
         t, positions, flat = motion(q0, q1, speed, plan["ramp_s"], dt)
-        if flat[0] > 0 and speed / flat[0] > min(cfg["acceleration_limit_deg_s2"] + cfg["deceleration_limit_deg_s2"]):
+        if flat[0] > 0 and speed / flat[0] > acceleration_limit:
             raise ValueError("短距离移动加速度超限, 请减小当前段的扫描或切换速度!!!")
         # 额外静止保持，等实际电机停止后才开始下一段
         t = np.r_[t, t[-1] + plan["settle_s"]]
@@ -417,8 +455,25 @@ def collect(args, cfg, plan, output):
         active, context = None, None
         if not result.result.success:
             raise RuntimeError(result.result.message)
-        if latest["state"] is None or np.max(np.abs(latest["state"][1] - q1)) > plan["hold_tolerance_deg"]:
-            raise RuntimeError("实际关节未到达段终点!!!")
+        # 轨迹点发完后，等待0.5秒并更新位置反馈。
+        deadline = time.monotonic() + 0.5
+        while rclpy.ok() and time.monotonic() < deadline:
+            rclpy.spin_once(node, timeout_sec=.02)
+            if failure:
+                raise RuntimeError(failure)
+        if not rclpy.ok():
+            raise RuntimeError("ROS已停止")
+        state = latest["state"]
+        if state is None or time.monotonic() - state[0] > plan["feedback_timeout_s"]:
+            raise RuntimeError("等待到位时关节反馈中断")
+        if not np.isfinite(state[1]).all() or np.max(np.abs(state[1] - q1)) > plan["hold_tolerance_deg"]:
+            error = state[1] - q1
+            details = "; ".join(
+                f"关节{i + 1}: 目标{q1[i]:.4f}°, 实际{state[1][i]:.4f}°, 误差{error[i]:+.4f}°"
+                for i in range(7)
+                if not np.isfinite(error[i]) or abs(error[i]) > plan["hold_tolerance_deg"]
+            )
+            raise RuntimeError(f"实际关节未到达段终点（容差{plan['hold_tolerance_deg']:g}°）: {details}")
 
     try:
         if not client.wait_for_server(timeout_sec=5.) or not stop.wait_for_service(timeout_sec=5.):

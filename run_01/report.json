@@ -1,0 +1,3325 @@
+{
+  "stages": [
+    {
+      "joint": 7,
+      "rank": 2,
+      "unknowns": 4,
+      "rmse_nm": 0.0027458438111663693,
+      "singular_values": [
+        7.093154738370611,
+        5.4989432616424585,
+        3.880178726245988e-16,
+        0.0
+      ]
+    },
+    {
+      "joint": 6,
+      "rank": 4,
+      "unknowns": 8,
+      "rmse_nm": 0.0026180224959186046,
+      "singular_values": [
+        7.546910527917552,
+        5.875730209119115,
+        5.4074597070132775,
+        2.3709604441704517,
+        4.4164385057017783e-16,
+        2.773179192135771e-16,
+        2.789708691223915e-17,
+        0.0
+      ]
+    },
+    {
+      "joint": 5,
+      "rank": 6,
+      "unknowns": 12,
+      "rmse_nm": 0.00525747075942996,
+      "singular_values": [
+        12.186849521162115,
+        10.714910259501341,
+        7.930075225880886,
+        7.093020008807297,
+        3.8603729528817445,
+        3.1382939039293207,
+        7.772544461504401e-16,
+        4.626353791669265e-16,
+        4.178921960149806e-16,
+        6.10876602536702e-17,
+        3.0510104039251644e-32,
+        0.0
+      ]
+    },
+    {
+      "joint": 4,
+      "rank": 8,
+      "unknowns": 16,
+      "rmse_nm": 0.005074833264043279,
+      "singular_values": [
+        24.570349558146123,
+        13.348556844112752,
+        11.97813030934758,
+        10.094699602033305,
+        7.027451915878253,
+        5.531708980069964,
+        3.7463983505595,
+        3.1554140169916134,
+        2.64529720895345e-15,
+        2.2119670846061e-15,
+        1.5411734110396204e-15,
+        6.183027154781742e-16,
+        1.6754620460357646e-16,
+        6.455889154972242e-17,
+        2.8422709498298387e-17,
+        0.0
+      ]
+    },
+    {
+      "joint": 3,
+      "rank": 10,
+      "unknowns": 20,
+      "rmse_nm": 0.004617123340294795,
+      "singular_values": [
+        34.50447726698177,
+        18.211258783336945,
+        14.337125697774699,
+        11.103741260557609,
+        9.595967010052188,
+        8.568045986664846,
+        6.596785118823557,
+        4.96611311793949,
+        4.300385017929223,
+        3.1031318383449786,
+        2.9080539824355833e-15,
+        2.7486378023515707e-15,
+        1.8706252846942105e-15,
+        1.3092453948811178e-15,
+        7.379814198105067e-16,
+        5.85299544594453e-16,
+        2.4045371097893676e-16,
+        1.0489698345367582e-16,
+        1.2291054315218016e-33,
+        0.0
+      ]
+    },
+    {
+      "joint": 2,
+      "rank": 12,
+      "unknowns": 24,
+      "rmse_nm": 0.004385479363419394,
+      "singular_values": [
+        64.31501458620737,
+        20.58948405218464,
+        18.3101171321632,
+        15.301411578884661,
+        11.567505450651462,
+        9.81907373338762,
+        8.954482019348422,
+        7.526328249370915,
+        5.072487556848329,
+        4.5164311702186035,
+        3.93341270479278,
+        3.120331246426395,
+        3.745578882815577e-15,
+        2.8021439630031476e-15,
+        1.8118755775030972e-15,
+        1.4387976185132233e-15,
+        1.2628327437482021e-15,
+        1.0127234417875947e-15,
+        7.52145608057793e-16,
+        4.970728747741012e-16,
+        1.5635532852122715e-16,
+        1.2076693973110352e-17,
+        6.461252254795203e-32,
+        0.0
+      ]
+    },
+    {
+      "joint": 1,
+      "rank": 14,
+      "unknowns": 28,
+      "rmse_nm": 0.0041744807704049,
+      "singular_values": [
+        72.01882576408076,
+        26.989759709827158,
+        19.83974041749909,
+        19.063335971035126,
+        12.402563826404368,
+        11.202755141087113,
+        10.596038927842685,
+        9.681418816526019,
+        8.328172736355267,
+        8.005587362100268,
+        5.272904395299565,
+        5.149126764132474,
+        4.292007978604449,
+        2.494184910768399,
+        6.347858963844267e-15,
+        6.2673142429229494e-15,
+        6.2673142429229494e-15,
+        6.2673142429229494e-15,
+        6.2673142429229494e-15,
+        6.2673142429229494e-15,
+        6.2673142429229494e-15,
+        6.2673142429229494e-15,
+        6.2673142429229494e-15,
+        6.2673142429229494e-15,
+        6.2673142429229494e-15,
+        6.2673142429229494e-15,
+        6.2673142429229494e-15,
+        6.16613961204718e-15
+      ]
+    }
+  ],
+  "physical_mass_valid": true,
+  "note": "不可辨识方向保留先验，单独质量和质心不是唯一标定结果。摩擦平均仅近似抵消对称库仑/粘性摩擦。",
+  "observable_fraction_m_hx_hy_hz": [
+    [
+      2.617057155129878e-33,
+      1.0000000000000002,
+      0.5000000000000002,
+      2.1959513411214025e-31
+    ],
+    [
+      1.2364771169519865e-31,
+      1.0,
+      0.04187797034095202,
+      0.4999999999999996
+    ],
+    [
+      0.4063513687615843,
+      1.0000000000000007,
+      0.5,
+      0.04187797034095204
+    ],
+    [
+      0.4063513687615841,
+      1.0000000000000004,
+      0.08984137326263106,
+      0.4999999999999999
+    ],
+    [
+      0.30795285842322145,
+      1.0000000000000002,
+      0.5000000000000002,
+      0.08984137326263102
+    ],
+    [
+      0.30795285842322145,
+      1.0000000000000004,
+      0.5000000000000002,
+      0.5000000000000003
+    ],
+    [
+      0.30795285842322145,
+      0.999999999999999,
+      1.0,
+      0.4999999999999998
+    ]
+  ],
+  "parameters_m_hx_hy_hz": [
+    [
+      2.2321,
+      -0.0002447358471242072,
+      3.4329481019363355e-05,
+      -0.0029606574399999998
+    ],
+    [
+      0.29205,
+      0.0001812366072089529,
+      -0.023174760798459808,
+      0.0026070442196193637
+    ],
+    [
+      0.37393814204202297,
+      -0.0001743470283587055,
+      0.0013483666269923904,
+      -0.015298860401540196
+    ],
+    [
+      0.183518142042023,
+      0.0003184373427159941,
+      -0.009132569089494388,
+      -2.1893207907609357e-05
+    ],
+    [
+      0.20831568114447258,
+      -0.0011821831515296793,
+      1.5110607370563304e-05,
+      -0.024837773030505616
+    ],
+    [
+      0.12009568114447258,
+      -0.00014640516187470378,
+      -0.00020036397241309227,
+      0.0001255154231294365
+    ],
+    [
+      0.04441068114447258,
+      -0.0006124510257145236,
+      0.00034611191587757844,
+      0.00046515536841309135
+    ]
+  ],
+  "samples": [
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": -69.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": -64.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": -59.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": -54.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": -49.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": -44.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": -39.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": -34.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": -29.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": -24.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": -19.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": -14.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": -9.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": -4.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": 0.8000009999999946,
+      "pairs": 7
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": 5.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": 10.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": 15.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": 20.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": 25.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": 30.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": 35.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": 40.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": 45.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": 50.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": 55.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": 60.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 0,
+      "joint": 7,
+      "point_deg": 65.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": -69.199999,
+      "pairs": 8
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": -64.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": -59.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": -54.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": -49.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": -44.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": -39.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": -34.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": -29.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": -24.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": -19.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": -14.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": -9.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": -4.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": 0.8000009999999946,
+      "pairs": 7
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": 5.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": 10.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": 15.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": 20.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": 25.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": 30.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": 35.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": 40.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": 45.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": 50.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": 55.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": 60.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 1,
+      "joint": 7,
+      "point_deg": 65.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": -69.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": -64.199999,
+      "pairs": 8
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": -59.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": -54.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": -49.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": -44.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": -39.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": -34.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": -29.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": -24.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": -19.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": -14.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": -9.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": -4.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": 0.8000009999999946,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": 5.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": 10.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": 15.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": 20.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": 25.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": 30.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": 35.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": 40.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": 45.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": 50.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": 55.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": 60.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 2,
+      "joint": 7,
+      "point_deg": 65.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 3,
+      "joint": 6,
+      "point_deg": -19.199999,
+      "pairs": 8
+    },
+    {
+      "sweep": 3,
+      "joint": 6,
+      "point_deg": -14.199998999999998,
+      "pairs": 7
+    },
+    {
+      "sweep": 3,
+      "joint": 6,
+      "point_deg": -9.199998999999998,
+      "pairs": 8
+    },
+    {
+      "sweep": 3,
+      "joint": 6,
+      "point_deg": -4.199998999999998,
+      "pairs": 7
+    },
+    {
+      "sweep": 3,
+      "joint": 6,
+      "point_deg": 0.8000010000000017,
+      "pairs": 7
+    },
+    {
+      "sweep": 3,
+      "joint": 6,
+      "point_deg": 5.800001000000002,
+      "pairs": 7
+    },
+    {
+      "sweep": 3,
+      "joint": 6,
+      "point_deg": 10.800001000000002,
+      "pairs": 7
+    },
+    {
+      "sweep": 3,
+      "joint": 6,
+      "point_deg": 15.800001000000002,
+      "pairs": 7
+    },
+    {
+      "sweep": 4,
+      "joint": 6,
+      "point_deg": -19.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 4,
+      "joint": 6,
+      "point_deg": -14.199998999999998,
+      "pairs": 7
+    },
+    {
+      "sweep": 4,
+      "joint": 6,
+      "point_deg": -9.199998999999998,
+      "pairs": 7
+    },
+    {
+      "sweep": 4,
+      "joint": 6,
+      "point_deg": -4.199998999999998,
+      "pairs": 7
+    },
+    {
+      "sweep": 4,
+      "joint": 6,
+      "point_deg": 0.8000010000000017,
+      "pairs": 8
+    },
+    {
+      "sweep": 4,
+      "joint": 6,
+      "point_deg": 5.800001000000002,
+      "pairs": 7
+    },
+    {
+      "sweep": 4,
+      "joint": 6,
+      "point_deg": 10.800001000000002,
+      "pairs": 7
+    },
+    {
+      "sweep": 4,
+      "joint": 6,
+      "point_deg": 15.800001000000002,
+      "pairs": 7
+    },
+    {
+      "sweep": 5,
+      "joint": 6,
+      "point_deg": -19.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 5,
+      "joint": 6,
+      "point_deg": -14.199998999999998,
+      "pairs": 7
+    },
+    {
+      "sweep": 5,
+      "joint": 6,
+      "point_deg": -9.199998999999998,
+      "pairs": 7
+    },
+    {
+      "sweep": 5,
+      "joint": 6,
+      "point_deg": -4.199998999999998,
+      "pairs": 7
+    },
+    {
+      "sweep": 5,
+      "joint": 6,
+      "point_deg": 0.8000010000000017,
+      "pairs": 7
+    },
+    {
+      "sweep": 5,
+      "joint": 6,
+      "point_deg": 5.800001000000002,
+      "pairs": 8
+    },
+    {
+      "sweep": 5,
+      "joint": 6,
+      "point_deg": 10.800001000000002,
+      "pairs": 7
+    },
+    {
+      "sweep": 5,
+      "joint": 6,
+      "point_deg": 15.800001000000002,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": -79.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": -74.199999,
+      "pairs": 8
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": -69.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": -64.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": -59.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": -54.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": -49.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": -44.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": -39.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": -34.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": -29.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": -24.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": -19.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": -14.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": -9.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": -4.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": 0.8000009999999946,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": 5.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": 10.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": 15.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": 20.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": 25.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": 30.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": 35.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": 40.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": 45.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": 50.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": 55.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": 60.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": 65.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": 70.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 6,
+      "joint": 5,
+      "point_deg": 75.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": -79.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": -74.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": -69.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": -64.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": -59.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": -54.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": -49.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": -44.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": -39.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": -34.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": -29.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": -24.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": -19.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": -14.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": -9.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": -4.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": 0.8000009999999946,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": 5.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": 10.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": 15.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": 20.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": 25.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": 30.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": 35.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": 40.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": 45.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": 50.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": 55.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": 60.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": 65.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": 70.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 7,
+      "joint": 5,
+      "point_deg": 75.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": -79.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": -74.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": -69.199999,
+      "pairs": 8
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": -64.199999,
+      "pairs": 8
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": -59.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": -54.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": -49.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": -44.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": -39.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": -34.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": -29.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": -24.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": -19.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": -14.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": -9.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": -4.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": 0.8000009999999946,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": 5.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": 10.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": 15.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": 20.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": 25.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": 30.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": 35.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": 40.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": 45.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": 50.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": 55.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": 60.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": 65.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": 70.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 8,
+      "joint": 5,
+      "point_deg": 75.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 10.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 15.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 20.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 25.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 30.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 35.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 40.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 45.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 50.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 55.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 60.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 65.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 70.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 75.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 80.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 85.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 90.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 95.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 100.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 9,
+      "joint": 4,
+      "point_deg": 105.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 10.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 15.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 20.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 25.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 30.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 35.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 40.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 45.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 50.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 55.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 60.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 65.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 70.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 75.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 80.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 85.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 90.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 95.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 100.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 10,
+      "joint": 4,
+      "point_deg": 105.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 10.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 15.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 20.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 25.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 30.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 35.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 40.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 45.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 50.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 55.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 60.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 65.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 70.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 75.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 80.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 85.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 90.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 95.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 100.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 11,
+      "joint": 4,
+      "point_deg": 105.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": -79.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": -74.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": -69.199999,
+      "pairs": 8
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": -64.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": -59.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": -54.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": -49.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": -44.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": -39.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": -34.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": -29.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": -24.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": -19.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": -14.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": -9.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": -4.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": 0.8000009999999946,
+      "pairs": 8
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": 5.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": 10.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": 15.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": 20.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": 25.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": 30.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": 35.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": 40.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": 45.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": 50.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": 55.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": 60.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": 65.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": 70.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 12,
+      "joint": 3,
+      "point_deg": 75.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": -79.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": -74.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": -69.199999,
+      "pairs": 8
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": -64.199999,
+      "pairs": 8
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": -59.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": -54.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": -49.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": -44.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": -39.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": -34.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": -29.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": -24.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": -19.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": -14.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": -9.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": -4.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": 0.8000009999999946,
+      "pairs": 8
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": 5.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": 10.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": 15.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": 20.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": 25.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": 30.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": 35.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": 40.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": 45.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": 50.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": 55.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": 60.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": 65.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": 70.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 13,
+      "joint": 3,
+      "point_deg": 75.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": -79.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": -74.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": -69.199999,
+      "pairs": 8
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": -64.199999,
+      "pairs": 8
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": -59.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": -54.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": -49.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": -44.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": -39.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": -34.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": -29.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": -24.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": -19.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": -14.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": -9.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": -4.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": 0.8000009999999946,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": 5.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": 10.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": 15.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": 20.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": 25.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": 30.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": 35.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": 40.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": 45.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": 50.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": 55.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": 60.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": 65.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": 70.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 14,
+      "joint": 3,
+      "point_deg": 75.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 20.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 25.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 30.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 35.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 40.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 45.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 50.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 55.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 60.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 65.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 70.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 75.80000100000001,
+      "pairs": 8
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 80.80000100000001,
+      "pairs": 8
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 85.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 90.80000100000001,
+      "pairs": 8
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 95.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 100.80000100000001,
+      "pairs": 8
+    },
+    {
+      "sweep": 15,
+      "joint": 2,
+      "point_deg": 105.80000100000001,
+      "pairs": 8
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 20.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 25.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 30.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 35.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 40.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 45.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 50.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 55.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 60.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 65.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 70.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 75.80000100000001,
+      "pairs": 8
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 80.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 85.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 90.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 95.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 100.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 16,
+      "joint": 2,
+      "point_deg": 105.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 20.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 25.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 30.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 35.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 40.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 45.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 50.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 55.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 60.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 65.80000100000001,
+      "pairs": 8
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 70.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 75.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 80.80000100000001,
+      "pairs": 8
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 85.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 90.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 95.80000100000001,
+      "pairs": 8
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 100.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 17,
+      "joint": 2,
+      "point_deg": 105.80000100000001,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": -79.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": -74.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": -69.199999,
+      "pairs": 8
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": -64.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": -59.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": -54.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": -49.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": -44.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": -39.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": -34.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": -29.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": -24.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": -19.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": -14.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": -9.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": -4.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": 0.8000009999999946,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": 5.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": 10.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": 15.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": 20.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": 25.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": 30.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": 35.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": 40.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": 45.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": 50.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": 55.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": 60.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": 65.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": 70.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 18,
+      "joint": 1,
+      "point_deg": 75.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": -79.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": -74.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": -69.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": -64.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": -59.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": -54.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": -49.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": -44.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": -39.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": -34.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": -29.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": -24.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": -19.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": -14.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": -9.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": -4.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": 0.8000009999999946,
+      "pairs": 8
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": 5.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": 10.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": 15.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": 20.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": 25.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": 30.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": 35.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": 40.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": 45.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": 50.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": 55.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": 60.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": 65.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": 70.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 19,
+      "joint": 1,
+      "point_deg": 75.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": -79.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": -74.199999,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": -69.199999,
+      "pairs": 8
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": -64.199999,
+      "pairs": 8
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": -59.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": -54.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": -49.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": -44.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": -39.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": -34.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": -29.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": -24.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": -19.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": -14.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": -9.199999000000005,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": -4.199999000000005,
+      "pairs": 8
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": 0.8000009999999946,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": 5.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": 10.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": 15.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": 20.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": 25.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": 30.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": 35.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": 40.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": 45.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": 50.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": 55.800000999999995,
+      "pairs": 8
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": 60.800000999999995,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": 65.800001,
+      "pairs": 8
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": 70.800001,
+      "pairs": 7
+    },
+    {
+      "sweep": 20,
+      "joint": 1,
+      "point_deg": 75.800001,
+      "pairs": 7
+    }
+  ],
+  "rmse_nm": 0.0041744807704049
+}

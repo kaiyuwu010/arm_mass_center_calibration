@@ -17,7 +17,7 @@ from rclpy.impl.implementation_singleton import rclpy_implementation
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Float64MultiArray
 from std_srvs.srv import Trigger
-from arm_calibration_interfaces.action import ServoJ
+from coludata_arm_ros.action import ServoJ
 
 ROOT = Path(__file__).resolve().parent
 
