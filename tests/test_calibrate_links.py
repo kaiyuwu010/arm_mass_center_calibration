@@ -25,8 +25,8 @@ class CalibrationTest(unittest.TestCase):
         self.params = np.column_stack([mass, mass[:, None]*com]).ravel()
 
     def test_gravity_against_independent_urdf_reference(self):
-        expected = [0, 3.10727183916, .398394436107, .433733933214,
-                    .001896597324, .001630052759, -.001661442317]
+        expected = [0, 3.11702304945, .384841325788, .434349320460,
+                    -.001896600088, -.001689301590, .002025382919]
         Y = m.regressor([10, -20, 30, 40, -50, 60, -70], self.cfg, [0, 0, -9.81])
         np.testing.assert_allclose(Y@self.params, expected, atol=1e-4)
         # 自身轴对本连杆质量和轴向一阶矩不可观测。

@@ -73,6 +73,8 @@ python3 calibrate_links.py fit --side \
 
 重新拟合须使用采集时相同的配置、计划和安装方向。
 
+若部分角度窗口采样或配对不足，离线拟合可添加 `--skip-incomplete`。程序跳过不足窗口，要求剩余数据的有效秩不低于计划有效秩，并将缺失明细写入 `report.json` 的 `coverage`。该检查不保证参数精度或独立姿态预测精度。
+
 ## 3. 扫描计划优化
 
 ```bash
