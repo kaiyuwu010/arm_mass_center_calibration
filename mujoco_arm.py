@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import io
 from pathlib import Path
 import time
 import xml.etree.ElementTree as ET
@@ -22,6 +23,25 @@ from coludata_arm_ros.action import ServoJ
 ROOT = Path(__file__).resolve().parent
 
 
+def mesh_asset(local):
+    """Convert oversized binary STL to OBJ in memory, preserving every triangle."""
+    raw = local.read_bytes()
+    if local.suffix.lower() != '.stl' or len(raw) < 84:
+        return local.name, raw
+    count = int.from_bytes(raw[80:84], 'little')
+    if count <= 200000 or len(raw) != 84 + 50 * count:
+        return local.name, raw
+    triangles = np.frombuffer(raw, dtype=np.dtype([
+        ('normal', '<f4', (3,)), ('vertices', '<f4', (3, 3)), ('attribute', '<u2')
+    ]), count=count, offset=84)
+    vertices, indices = np.unique(triangles['vertices'].reshape(-1, 3),
+                                  axis=0, return_inverse=True)
+    output = io.StringIO()
+    np.savetxt(output, vertices, fmt='v %.9g %.9g %.9g')
+    np.savetxt(output, indices.reshape(-1, 3) + 1, fmt='f %d %d %d')
+    return local.stem + '.obj', output.getvalue().encode('ascii')
+
+
 def load_model(path, names, side=False, mass_scale=1.):
     root = ET.parse(path).getroot()
     if side:
@@ -33,11 +53,15 @@ def load_model(path, names, side=False, mass_scale=1.):
         ET.SubElement(mount, 'origin', xyz='-0.4 0 0', rpy=f'0 {-np.pi / 2} 0')
     # 直接读已有URDF，只在内存中解析网格路径并保留可视几何
     assets = {}
+    resolved = {}
     for mesh in root.iter('mesh'):
         filename = mesh.get('filename')
         local = ROOT / filename.split('package://coludata_arm_ros/')[-1] if filename.startswith('package://') else path.parent / filename
-        mesh.set('filename', local.name)
-        assets[local.name] = local.read_bytes()
+        if local not in resolved:
+            asset_name, content = mesh_asset(local)
+            resolved[local] = asset_name
+            assets[asset_name] = content
+        mesh.set('filename', resolved[local])
     # 修改内存中的XML，给urdf增加mujoco专用加载配置
     extension = ET.SubElement(root, 'mujoco')
     ET.SubElement(extension, 'compiler', discardvisual='false', fusestatic='false')
@@ -87,11 +111,8 @@ class ArmSimulation(Node):
         if self.scale.shape != (7,) or not np.all(np.isfinite(self.scale) & (self.scale > 0)):
             raise ValueError('仿真配置的torque_permille_per_nm必须为7个正数!!!')
         self.model, self.data = load_model(args.urdf, self.names, args.side, args.mass_scale)
-        # 保留范围内的零位；零位在限位上或范围外时，从区间中点启动。
-        lower = np.asarray(cfg['position_min_deg'], dtype=float)
-        upper = np.asarray(cfg['position_max_deg'], dtype=float)
-        initial_deg = np.where((lower < 0) & (upper > 0), 0., (lower + upper) / 2)
-        self.data.qpos[:] = np.radians(initial_deg)
+        # 从 URDF 全零位启动；配置限位用于规划，不改变模型零位。
+        self.data.qpos[:] = 0.
         if args.side:
             # 配置给出基座坐标系重力，绕世界Y轴-90°后转换到世界坐标系。
             gx, gy, gz = cfg['drag']['side_gravity']

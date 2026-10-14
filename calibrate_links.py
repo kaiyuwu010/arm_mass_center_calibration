@@ -76,7 +76,7 @@ def motion(q0, q1, speed, ramp, dt):
     # 末点按ROS纳秒精度去重，避免浮点误差生成相同的time_from_start。
     t = np.r_[t[np.rint(t*1e9) < round(total*1e9)], total]
     s = np.empty(len(t))
-    # 对恒加速、匀速、恒减速的速度积分，得到公共位移s（deg）
+    # 对恒加速、匀速、恒减速的速度积分，得到公共位移s(deg)
     for n, x in enumerate(t):
         if x <= ramp:
             s[n] = speed * x * x / (2*ramp)                        # 加速段
@@ -94,7 +94,7 @@ def sample_points(sweep, plan):
     start, end = sweep['range_deg']
     # 计算扫描两端预留的角度
     margin = plan['speed_deg_s']*(plan['ramp_s']/2 + plan['settle_s'] + plan['stable_s']) + plan['sample_tolerance_deg']
-    return np.arange(start + margin + 1e-6, end - margin, 5.).tolist()
+    return np.arange(start + margin + 1e-6, end - margin, 5.0).tolist()
 
 # 验证扫描
 def validate_plan(plan, cfg):
@@ -130,9 +130,9 @@ def validate_plan(plan, cfg):
         if not lo[j] < start < end < hi[j]:
             raise ValueError(f"扫描{sweep_id}关节{j + 1}范围超出关节限制: 要求 {lo[j]:g}° < {start:g}° < {end:g}° < {hi[j]:g}°")
         if plan['sample_tolerance_deg'] >= 2.5:
-            raise ValueError('5度采样间隔要求sample_tolerance_deg小于2.5，避免窗口重叠')
+            raise ValueError('5度采样间隔要求sample_tolerance_deg小于2.5, 避免窗口重叠')
         if not math.isfinite(start) or not math.isfinite(end) or len(sample_points(sweep, plan)) < 3:
-            raise ValueError('有效匀速区间不足以容纳3个间隔5度的采样点，请扩大扫描范围或降低速度')
+            raise ValueError('有效匀速区间不足以容纳3个间隔5度的采样点, 请扩大扫描范围或降低速度')
         sweep.pop('points_deg', None)  # 旧配置字段不再参与采样。
     return plan
 
@@ -151,12 +151,14 @@ def paired_rows(raw, plan, cfg, g, skipped=None):
             for direction in (1, -1):
                 # 遍历每行数据，筛选出满足id、方向、位置误差三个条件的数据
                 rows = [r for r in raw if r["sweep"] == sweep_id and r["direction"] == direction and abs(r["q"][j] - point) <= plan["sample_tolerance_deg"]]
+                # 单向样本小于最小采样数
                 if len(rows) < plan["min_samples"]:
                     if skipped is not None:
                         skipped.append({"sweep": sweep_id, "joint": j+1, "point_deg": point, "reason": "单向样本不足", "direction": direction, "samples": len(rows)})
                         break
-                    raise ValueError(f"扫描id: {sweep_id}, 关节: {j+1} ,角度: {point} ,方向: {direction} ,稳定采样不足!!!")
+                    raise ValueError(f"扫描id: {sweep_id},关节: {j+1} ,角度: {point} ,方向: {direction} ,稳定采样不足!!!")
                 selected.append(rows)
+            # 如果选择的数据，不包括正反向数据(2个列表)
             if len(selected) != 2:
                 continue
             # 反向样本
@@ -183,6 +185,7 @@ def paired_rows(raw, plan, cfg, g, skipped=None):
                 # 平均力矩并转换方向
                 tau = (fwd["torque"][j] + rev["torque"][j]) / 2*signs[j] / scales[j]
                 pairs.append(((yf + yr)/2, tau))
+            # 如果数据对数量小于最小采样数
             if len(pairs) < plan["min_samples"]:
                 if skipped is not None:
                     skipped.append({"sweep": sweep_id, "joint": j+1, "point_deg": point, "reason": "有效配对不足", "pairs": len(pairs)})
@@ -201,26 +204,32 @@ def identify(A, b, cfg, metadata):
     # 将配置文件中的质量、质心转化为先验参数
     masses = np.asarray(cfg["drag"]["link_mass_kg"])
     com = np.asarray(cfg["drag"]["link_com_m"]).reshape(7, 3)
+    # 把每个关节的质量和三个质量一阶矩拼成一维参数数组
     prior = np.column_stack((masses, masses[:, None] * com)).ravel()
-    # 使用单位尺度归一化，避免kg和kg*m混合使秩判断失真
-    scale = np.tile([1., .1, .1, .1], 7)
+    # 质心的典型量级是0.1m，所以对质心的参数进行缩放，避免奇异值分解时数值不稳定
+    scale = np.tile([1.0, 0.1, 0.1, 0.1], 7)
     stages = []
     estimate = prior.copy()
     observable = np.zeros(28)
     # 从末端向根部遍历
     for joint in range(7, 0, -1):
+        # 找到所有关节编号大于等于当前关节的行索引
         rows = [i for i, item in enumerate(metadata) if item["joint"] >= joint]
         if not rows:
             continue
+        # 定义4*(joint - 1):28列的切片范围
         cols = slice(4*(joint - 1), 28)
         X = A[rows, cols] * scale[cols]
-        # svd分解找到能辨识的参数
+        # svd分解，计算矩阵的秩
         U, singular, Vt = np.linalg.svd(X, full_matrices=False)
         rank = int(np.sum(singular > max(1e-10, singular[0]*1e-4))) if singular.size else 0
+        # 创建一个与X列数相同的零向量delta
         delta = np.zeros(X.shape[1])
         if rank:
+            # b = A[rows] @ prior + X @ delta
             delta = Vt[:rank].T @ ((U[:, :rank].T @ (b[rows] - A[rows] @ prior))/singular[:rank])
         estimate = prior.copy()
+        # 更新估计值，使用scale把delta缩放到真实量级
         estimate[cols] += scale[cols] * delta
         observable[:] = 0
         # 可观测的参数对应的回归矩阵
@@ -263,12 +272,15 @@ def collect(args, cfg, plan, output):
     stop = node.create_client(Trigger, args.namespace + "/quick_stop")
     latest = {"state": None, "torque": None}
     position_window = deque()
+    # 统计各种原因拒绝次数
     rejected = Counter()
     active = None
+    # 原始数据
     raw = []
     context = None
     stable_since = None
     previous_v = None
+    # 记录采集过程中出现的错误
     failure = None
     log = (output/"raw.jsonl").open("w")
 
@@ -280,12 +292,13 @@ def collect(args, cfg, plan, output):
         # 检查数据长度
         if len(msg.position) < len(msg.name) or len(msg.velocity) < len(msg.name):
             return
-        # 更新最近数据，state包括当前时间、位置、速度
+        # 更新最近数据，state:(时间、位置deg、速度deg)
         latest["state"] = (time.monotonic(), np.degrees([msg.position[i] for i in idx]), np.degrees([msg.velocity[i] for i in idx]))
         stamp, positions, _ = latest["state"]
+        # 追加到位置窗口
         position_window.append((stamp, positions.copy()))
-        # 保留覆盖最近0.5秒的样本，包括窗口边界前的最后一帧。
-        while len(position_window) > 2 and position_window[1][0] <= stamp - .5:
+        # 如果窗口长度大于2, 并且距离当前帧时间超过0.5秒，删除样本
+        while len(position_window) > 2 and position_window[1][0] <= stamp - 0.5:
             position_window.popleft()
 
     # 力矩回调函数
@@ -294,52 +307,61 @@ def collect(args, cfg, plan, output):
         now = time.monotonic()
         latest["torque"] = now
         state = latest["state"]
-        # 力矩话题没有Header，只能按到达时间近似配对，拒绝超过半个发布周期的状态。
+        # 检查数据有效性
         if state is None:
             return
         if len(msg.data) != 7 or not np.isfinite(np.r_[state[1], state[2], msg.data]).all():
-            failure = "反馈包含无效位置、速度或力矩"
+            failure = "反馈包含无效位置、速度或力矩!!!"
             return
         if np.any(np.abs(msg.data) >= np.asarray(cfg["torque_limit_permille"])):
-            failure = "力矩达到配置上限"
+            failure = "力矩达到配置上限!!!"
             return
         lower = np.asarray(cfg["position_min_deg"])
         upper = np.asarray(cfg["position_max_deg"])
-        outside = np.flatnonzero((state[1] <= lower) | (state[1] >= upper))
+        # 检查关节位置是否超出限制
+        outside = np.flatnonzero((state[1] <= lower) | (state[1] >= upper)) # 找出超限的元素索引
         if len(outside):
             details = "; ".join(f"关节{i + 1}: 实际{state[1][i]:.4f}°, 要求{lower[i]:g}° < 位置 < {upper[i]:g}°" for i in outside)
             failure = f"反馈位置达到关节限制: {details}"
             return
+        # 检查关节速度是否超出限制
         if np.any(np.abs(state[2]) > np.asarray(cfg["velocity_limit_deg_s"])):
-            failure = "反馈速度超出关节限制"
+            failure = "反馈速度超出关节限制!!!"
             return
         if context is None:
             return
         # 半个状态发布周期
-        max_skew = .5/cfg.get("state_publish_rate_hz", 20.)
+        max_skew = 0.5/cfg.get("state_publish_rate_hz", 20.)
         # 力矩接收时间与最近关节状态时间超过半个状态发布周期拒绝
         if now-state[0] > max_skew or len(msg.data) != 7:
             rejected['位置与力矩时间不匹配'] += 1
             stable_since = None
             return
         q = state[1]
-        # 对最近约0.1秒的位置做直线拟合，估计deg/s速度，抑制原始速度反馈噪声。
-        velocity_rows = [item for item in position_window if item[0] >= state[0] - .1]
-        if len(velocity_rows) < 3 or velocity_rows[-1][0] - velocity_rows[0][0] < .05:
+        # 找出最近约0.1秒的位置数据
+        velocity_rows = [item for item in position_window if item[0] >= state[0] - 0.1]
+        # 如果样本数小于3，或者时间跨度小于0.05秒
+        if len(velocity_rows) < 3 or velocity_rows[-1][0] - velocity_rows[0][0] < 0.05:
             rejected['位置速度估计窗口不足'] += 1
             stable_since = None
             return
+        # 计算相对第一个时间点的增量时间
         times = np.asarray([item[0] - velocity_rows[0][0] for item in velocity_rows])
+        # 平均化时间
         times -= times.mean()
+        # 取出位置
         positions = np.asarray([item[1] for item in velocity_rows])
+        # 通过线性拟合估计速度
         v = times @ (positions - positions.mean(axis=0)) / (times @ times)
         torque = np.asarray(msg.data)
+        # 检查位置、速度、力矩是否为有限值
         if not np.isfinite(np.r_[q, v, torque]).all():
             failure = "反馈包含无效位置、速度或力矩"
             return
         if np.any(np.abs(torque) >= np.asarray(cfg["torque_limit_permille"])):
             failure = "力矩达到配置上限"
             return
+        # 取出扫描关节索引
         j = context["joint"]
         others = np.arange(7) != j
         if np.any(np.abs(q[others] - context["pose"][others]) > plan["hold_tolerance_deg"]):
@@ -362,23 +384,25 @@ def collect(args, cfg, plan, output):
             '非扫描轴速度过大': np.all(np.abs(v[others]) < tolerance),
             '扫描轴相邻速度变化过大': previous_v is None or abs(v[j] - previous_v) <= tolerance,
         }
-        # 判断是否稳定
+        # 判断是否稳定，全为true才返回true
         stable = all(checks.values())
         previous_v = v[j]
         if not stable:
+            # 记录不稳定的检查项
             rejected.update(name for name, passed in checks.items() if not passed)
             stable_since = None
             return
         # 记录稳定的时刻
         if stable_since is None:
             stable_since = now
-        # 必须在稳定后再过plan["stable_s"]的时间记录数据
+        # 必须在稳定后再过stable_s的时间记录数据
         if now - stable_since < plan["stable_s"]:
             rejected['连续稳定时间不足'] += 1
             return
         # 组织并添加数据
         row = {"time": now, "sweep": context["sweep"], "direction": context["direction"], "q": q.tolist(), "v": v.tolist(), "torque": torque.tolist()}
         raw.append(row)
+        # 保存到文件
         log.write(json.dumps(row)+"\n")
         log.flush()
 
@@ -393,45 +417,52 @@ def collect(args, cfg, plan, output):
             if failure:
                 raise RuntimeError(failure)
             if time.monotonic() > deadline:
-                raise TimeoutError("等待运动服务超时")
+                raise TimeoutError("等待运动服务超时!!!")
             if active is not None:
                 now = time.monotonic()
                 if latest["state"] is None or latest["torque"] is None or min(latest["state"][0], latest["torque"]) < now-plan["feedback_timeout_s"]:
-                    raise RuntimeError("反馈中断，停止标定")
+                    raise RuntimeError("反馈中断，停止标定!!!")
         if not rclpy.ok():
-            raise RuntimeError("ROS已停止")
+            raise RuntimeError("ROS已停止!!!")
         if failure:
             raise RuntimeError(failure)
         return future.result()
 
     # 控制机械臂运动
+    # q0: 起始位置, q1: 目标位置, scan: 扫描信息
     def run(q0, q1, scan=None):
         nonlocal active, context, stable_since, previous_v
         # 根据新收集的0.5秒位置窗口判断静止，避免原始速度噪声误判。
         deadline = time.monotonic() + 5.
         position_window.clear()
         spread = np.full(7, np.nan)
+        # 等待机械臂静止，观察0.5秒
         while rclpy.ok():
-            rclpy.spin_once(node, timeout_sec=.02)
+            rclpy.spin_once(node, timeout_sec=0.02)
             if failure:
                 raise RuntimeError(failure)
             now = time.monotonic()
             state = latest["state"]
+            # 检查反馈是否中断或包含无效值
             if state is None or now - state[0] > plan["feedback_timeout_s"]:
-                raise RuntimeError("等待静止时关节反馈中断")
+                raise RuntimeError("等待静止时关节反馈中断!!!")
             if not np.isfinite(np.r_[state[1], state[2]]).all():
-                raise RuntimeError("关节反馈包含无效位置或速度")
+                raise RuntimeError("关节反馈包含无效位置或速度!!!")
             if len(position_window) >= 3:
                 positions = np.asarray([item[1] for item in position_window])
+                # 计算各轴位置最大波动
                 spread = np.ptp(positions, axis=0)
+                # 计算窗口时间跨度
                 duration = position_window[-1][0] - position_window[0][0]
-                if duration >= .5 and np.all(spread <= .5):
+                if duration >= 0.5 and np.all(spread <= 0.5):
                     break
+            # 如果等待超过5秒仍未静止，抛出异常
             if now >= deadline:
                 details = ", ".join(f"关节{i + 1}: {value:.4f}" for i, value in enumerate(spread))
-                raise RuntimeError(f"等待静止超时（5秒），要求0.5秒内各轴位置极差≤0.5°；当前极差（°）：{details}")
+                raise RuntimeError(f"等待静止超时5秒, 要求0.5秒内各轴位置波动≤0.5°, 当前位置波动(°): {details}")
+        # 检查初始状态
         if not rclpy.ok():
-            raise RuntimeError("ROS已停止")
+            raise RuntimeError("ROS已停止!!!")
         if scan is None:
             q0 = latest["state"][1].copy()
         if not np.isfinite(q0).all() or not np.isfinite(q1).all():
@@ -442,17 +473,17 @@ def collect(args, cfg, plan, output):
         if len(outside):
             details = "; ".join(f"关节{i + 1}: {q0[i]:.6f}°, 要求 {lower[i]:g}° < 位置 < {upper[i]:g}°" for i in outside)
             raise ValueError(f"当前位置超出配置范围: {details}")
-        # 姿态切换使用独立速度；扫描仍按标定速度运动。
+        # 姿态切换使用独立速度,扫描使用标定速度
         speed = plan["transfer_speed_deg_s"] if scan is None else plan["speed_deg_s"]
         acceleration_limit = min(cfg["acceleration_limit_deg_s2"] + cfg["deceleration_limit_deg_s2"])
         if scan is None:
             distance = float(np.max(np.abs(q1 - q0)))
             if distance >= 1e-10:
-                # 短距离三角轨迹的加速度为speed²/distance，自动限制切换速度
-                speed = min(speed, math.sqrt(acceleration_limit * distance) * .999999)
+                # 短距离使用三角速度轨迹，d = v²/a，重置速度
+                speed = min(speed, math.sqrt(acceleration_limit * distance) * 0.999999)
         # 控制周期转为ms
         dt = cfg["control_period_ms"]/1000.
-        if not .002 <= dt <= .1:
+        if not 0.002 <= dt <= 0.1:
             raise ValueError("control_period_ms必须为2~100!!!")
         if np.max(np.abs(q1 - q0))/speed/dt > 200000:
             raise ValueError("轨迹超过20万点, 请缩短移动距离或分段执行!!!")
@@ -480,7 +511,7 @@ def collect(args, cfg, plan, output):
             active = None
             raise RuntimeError("ServoJ拒绝目标, 请确认机械臂已使能、未处于拖动或其他运动中!!!")
         if scan is not None:
-            context = dict(scan, started=started, flat=flat)
+            context = dict(scan, started=started, flat = flat)
         stable_since, previous_v = None, None
         result = wait(active.get_result_async(), t[-1] + 10.)
         active, context = None, None
@@ -490,13 +521,16 @@ def collect(args, cfg, plan, output):
         deadline = time.monotonic() + 0.5
         while rclpy.ok() and time.monotonic() < deadline:
             rclpy.spin_once(node, timeout_sec=.02)
+            # 检查failure
             if failure:
                 raise RuntimeError(failure)
         if not rclpy.ok():
-            raise RuntimeError("ROS已停止")
+            raise RuntimeError("ROS已停止!!!")
         state = latest["state"]
+        # 检查反馈是否中断或超时
         if state is None or time.monotonic() - state[0] > plan["feedback_timeout_s"]:
-            raise RuntimeError("等待到位时关节反馈中断")
+            raise RuntimeError("等待到位时关节反馈中断!!!")
+        # 检查实际位置是否到达目标位置
         if not np.isfinite(state[1]).all() or np.max(np.abs(state[1] - q1)) > plan["hold_tolerance_deg"]:
             error = state[1] - q1
             details = "; ".join(
@@ -533,9 +567,9 @@ def collect(args, cfg, plan, output):
             run(q1, q0, dict(ctx, direction=-1))
             counts = [sum(r["sweep"] == sweep_id and r["direction"] == direction for r in raw) for direction in (1, -1)]
             print(f"扫描{sweep_id}稳定样本：正向{counts[0]}，反向{counts[1]}", flush=True)
-            print(f"扫描{sweep_id}筛选未通过次数（原因可重叠）：{dict(rejected)}", flush=True)
+            print(f"扫描{sweep_id}被拒绝样本数：{dict(rejected)}", flush=True)
             if min(counts) == 0:
-                raise RuntimeError(f"扫描{sweep_id}至少一个方向没有稳定样本，请检查反馈时间匹配和扫描速度")
+                raise RuntimeError(f"扫描{sweep_id}至少一个方向没有稳定样本，请检查反馈时间匹配和扫描速度!!!")
         return raw
     except BaseException:
         context = None
@@ -551,7 +585,6 @@ def collect(args, cfg, plan, output):
         node.destroy_node()
         if rclpy.ok():
             rclpy.shutdown()
-
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -572,9 +605,9 @@ def main():
     # 获取重力在基坐标系向量
     g = gravity_vector(cfg, args.side)
     if args.mode == "fit" and args.data is None:
-        parser.error("fit需要--data")
+        parser.error("fit模式需要--data参数!!!")
     args.output.mkdir(parents=True, exist_ok=True)
-    # 本次拟合可能不生成候选参数，清除旧文件以免误用旧结果。
+    # 本次拟合可能不生成候选参数，清除旧文件以免误用旧结果
     (args.output/"candidate_drag.yaml").unlink(missing_ok=True)
     (args.output/"inputs.yaml").write_text(yaml.safe_dump({"config": cfg, "plan": plan, "gravity": g.tolist()}, allow_unicode=True))
     # 收集数据
@@ -583,6 +616,7 @@ def main():
     skipped = [] if args.skip_incomplete else None
     A, b, metadata = paired_rows(raw, plan, cfg, g, skipped)
     coverage = None
+    # 如果数据不完整
     if args.skip_incomplete:
         scale = np.tile([1., .1, .1, .1], 7)
         reference = []
@@ -598,7 +632,7 @@ def main():
         target_rank = effective_rank(np.asarray(reference))
         actual_rank = effective_rank(A * scale) if A.size else 0
         if actual_rank < target_rank:
-            raise ValueError(f"跳过不足窗口后有效秩{actual_rank}/{target_rank}，需补充采集")
+            raise ValueError(f"跳过不足窗口后有效秩{actual_rank}/{target_rank}，需补充采集!!!")
         coverage = dict(target_rank=target_rank, actual_rank=actual_rank, skipped_windows=skipped)
     # 辨识参数
     report, patch = identify(A, b, cfg, metadata)

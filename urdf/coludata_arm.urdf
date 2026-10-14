@@ -77,7 +77,7 @@
     </collision>
   </link>
   <joint name="joint2" type="revolute">
-    <origin xyz="0 0 0" rpy="1.5708 -1.5708 0"/>
+    <origin xyz="0 0 0" rpy="0.0 -1.5708 -1.5708"/>
     <parent link="link1"/>
     <child link="link2"/>
     <axis xyz="0 0 -1"/>
@@ -174,7 +174,7 @@
     <inertial>
       <origin xyz="-0.00583 -0.00039 0.00256" rpy="0 0 0"/>
       <mass value="0.25257"/>
-      <inertia ixx="5.1289E-05" ixy="6.7663E-09" ixz="-3.0444E-05" iyy="-0.004025579" iyz="-2.2827E-08" izz="-0.004031028"/>
+      <inertia ixx="5.1289E-05" ixy="6.7663E-09" ixz="-3.0444E-05" iyy="0.004025579" iyz="-2.2827E-08" izz="0.004031028"/>
     </inertial>
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -193,7 +193,7 @@
     </collision>
   </link>
   <joint name="joint6" type="revolute">
-    <origin xyz="0 0 0" rpy="1.5708 -1.5708 0"/>
+    <origin xyz="0 0 0" rpy="-1.5707926535897934 -1.5707926535897934 0"/>
     <parent link="link5"/>
     <child link="link6"/>
     <axis xyz="0 0 1"/>
