@@ -121,12 +121,13 @@ def calibrate_motor(joint, start_deg, end_deg, speed_deg_s=0.5, friction=False):
         if friction:
             completed = True
             return
-        # 如果不是测量摩擦输出匀速段的平均扭矩
+        # 打印匀速段平均扭矩
         for scan, label in [(1, 'Forward'), (-1, 'Reverse')]:
             values = cruise_samples[scan]
-            print(f'{label} 匀速段 mean: {np.mean(values):.3f} permille, samples={len(values)}' if values else f'{label}: no cruise samples')
+            print(f'{label} 匀速段平均力矩: {np.mean(values):.3f} permille, 样本数={len(values)}' if values else f'{label}: 没有匀速段样本!!!')
+        # 正反向都有匀速段样本
         if cruise_samples[1] and cruise_samples[-1]:
-            print(f'双向匀速段 mean: {(np.mean(cruise_samples[1]) + np.mean(cruise_samples[-1])) / 2:.3f} permille')
+            print(f'双向匀速段平均力矩: {(np.mean(cruise_samples[1]) + np.mean(cruise_samples[-1])) / 2:.3f} permille')
         means = []
         print(f'中点: {midpoint:.3f} deg, 平均窗口: +/-{window:g} deg')
         # 计算中点附近的平均扭矩
