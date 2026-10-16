@@ -14,7 +14,12 @@ from coludata_arm_ros.action import ServoJ
 from calibrate_links import motion
 
 
-def calibrate_motor(joint, start_deg, end_deg, speed_deg_s=.5):
+# 库伦摩擦模式:不同速度、往返测量次数
+FRICTION_SPEEDS = [0.5, 1.0, 2.0, 5.0]
+FRICTION_REPEATS = 3
+
+
+def calibrate_motor(joint, start_deg, end_deg, speed_deg_s=.5, friction=False):
     rclpy.init(signal_handler_options=SignalHandlerOptions.NO)
     node = rclpy.create_node('midpoint_torque')
     client = ActionClient(node, ServoJ, '/arm_driver/servo_j')
@@ -23,6 +28,10 @@ def calibrate_motor(joint, start_deg, end_deg, speed_deg_s=.5):
     q, direction, state_time = None, 0, 0.
     samples, window, midpoint = {1: [], -1: []}, 2., (start_deg + end_deg) / 2
     cruise_samples, velocity, elapsed, flat = {1: [], -1: []}, float('nan'), 0., (0., 0.)
+    # 不同速度下的摩擦半差
+    friction_results = []
+    completed = False
+    forward = np.sign(end_deg - start_deg)
 
     def state_cb(msg):
         nonlocal q, state_time, velocity
@@ -33,8 +42,10 @@ def calibrate_motor(joint, start_deg, end_deg, speed_deg_s=.5):
 
     def torque_cb(msg):
         if direction and q is not None and time.monotonic() - state_time < .02 and np.isfinite([q[j], msg.data[j]]).all():
-            samples[direction].append((q[j], msg.data[j]))
-            if flat[0] < elapsed < flat[1] and abs(velocity - direction * speed_deg_s) <= .15 * speed_deg_s:
+            cruising = flat[0] < elapsed < flat[1] and abs(velocity - direction * speed_deg_s) <= .15 * speed_deg_s
+            if not friction or cruising:
+                samples[direction].append((q[j], msg.data[j]))
+            if cruising:
                 cruise_samples[direction].append(msg.data[j])
 
     def motion_cb(msg):
@@ -53,7 +64,14 @@ def calibrate_motor(joint, start_deg, end_deg, speed_deg_s=.5):
         while q is None:
             rclpy.spin_once(node)
         target = q.copy()
-        for angle, scan in [(start_deg, 0), (end_deg, 1), (start_deg, -1)]:
+        scans = [(start_deg, 0, speed_deg_s)]
+        speeds = FRICTION_SPEEDS if friction else [speed_deg_s]
+        for speed in speeds:
+            for _ in range(FRICTION_REPEATS if friction else 1):
+                scans.extend([(end_deg, int(forward), speed), (start_deg, -int(forward), speed)])
+        for angle, scan, speed_deg_s in scans:
+            if scan == forward:
+                samples, cruise_samples = {1: [], -1: []}, {1: [], -1: []}
             target[j] = angle
             times, positions, flat = motion(q.copy(), target, speed_deg_s, 3., .01)
             goal = ServoJ.Goal()
@@ -72,6 +90,20 @@ def calibrate_motor(joint, start_deg, end_deg, speed_deg_s=.5):
             direction = 0
             if not result.success:
                 raise RuntimeError(result.message)
+            if friction and scan == -forward:
+                means = []
+                for sign in (1, -1):
+                    nearby = [torque for angle, torque in samples[sign] if abs(angle - midpoint) <= window]
+                    if len(nearby) < 3:
+                        raise RuntimeError('中点窗口内匀速样本不足，请扩大运动范围')
+                    means.append(float(np.mean(nearby)))
+                half_difference = (means[0] - means[1]) / 2
+                friction_results.append((speed_deg_s, half_difference))
+                print(f'速度 {speed_deg_s:g} deg/s, 半差: {half_difference:.3f} permille', flush=True)
+        # 如果是测量摩擦到此结束
+        if friction:
+            completed = True
+            return
         for scan, label in [(1, 'Forward'), (-1, 'Reverse')]:
             values = cruise_samples[scan]
             print(f'{label} 匀速段 mean: {np.mean(values):.3f} permille, samples={len(values)}' if values else f'{label}: no cruise samples')
@@ -99,6 +131,25 @@ def calibrate_motor(joint, start_deg, end_deg, speed_deg_s=.5):
     finally:
         node.destroy_node()
         rclpy.shutdown()
+        if completed:
+            plot_friction(joint, friction_results)
+
+# 画图显示不同速度下库伦摩擦的变化
+def plot_friction(joint, results):
+    import matplotlib.pyplot as plt
+    speeds, differences = np.asarray(results).T
+    viscous, coulomb = np.polyfit(speeds, differences, 1)
+    print(f'库伦摩擦 Fc: {coulomb:.3f} permille')
+    print(f'黏性系数 b: {viscous:.3f} permille/(deg/s)')
+    fig, ax = plt.subplots()
+    ax.scatter(speeds, differences, label='Measured half-difference')
+    v = np.linspace(0, max(speeds), 100)
+    ax.plot(v, coulomb + viscous * v, label=f'Fc={coulomb:.3f}, b={viscous:.3f}')
+    ax.set(xlabel='Speed (deg/s)', ylabel='Torque (permille)', title=f'Joint {joint}: D(v) = Fc + b v')
+    ax.grid(True)
+    ax.legend()
+    fig.tight_layout()
+    plt.show()
 
 
 if __name__ == '__main__':
@@ -107,4 +158,5 @@ if __name__ == '__main__':
     parser.add_argument('--start-deg', type=float, required=True)
     parser.add_argument('--end-deg', type=float, required=True)
     parser.add_argument('--speed-deg-s', type=float, default=.5)
+    parser.add_argument('--friction', action='store_true', help='按脚本配置的速度和次数测量摩擦并绘图')
     calibrate_motor(**vars(parser.parse_args()))

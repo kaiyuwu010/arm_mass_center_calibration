@@ -255,7 +255,6 @@ def identify(A, b, cfg, metadata):
 
 
 def collect(args, cfg, plan, output):
-    # 延迟导入，离线拟合不依赖ROS运行环境。
     import rclpy
     from rclpy.signals import SignalHandlerOptions
     from rclpy.action import ActionClient

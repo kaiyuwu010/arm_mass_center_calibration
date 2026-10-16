@@ -121,6 +121,21 @@ python3 calibrate_motor_torque_ros.py \
 起点需小于终点，速度需为正，范围需留出加减速距离。脚本不自动使能、不检查碰撞，异常时尝试调用 `quick_stop`。
 真机测量与采集的 ROS_DOMAIN_ID 应与驱动一致；仿真和采集均使用 `coludata_arm_ros/action/ServoJ` 接口。仿真使用独立的 ROS_DOMAIN_ID，避免与真机同名接口冲突。
 
+增加 `--friction` 可测量库伦摩擦：
+
+```bash
+python3 calibrate_motor_torque_ros.py \
+  --joint 6 --start-deg -20 --end-deg 20 --friction
+```
+
+此模式使用脚本顶部的 `FRICTION_SPEEDS`（默认 0.5、1、2、5°/s）和
+`FRICTION_REPEATS`（默认每个速度往返 3 次），忽略 `--speed-deg-s`。
+只统计中点 ±2° 内的匀速样本，计算正速度与负速度力矩均值的半差，
+拟合 `D(v) = Fc + b*v`，打印库伦摩擦 `Fc` 和黏性系数 `b`，结束后显示散点和拟合曲线。
+单位仍为 permille；绘图需要 matplotlib。范围应让最高速度下的整个中点窗口都处于匀速段
+（默认速度及 3 秒加减速配置下，行程应大于 19°），并满足关节运动限制。
+若低速数据明显偏离直线，可调整速度配置，选用运动平稳的速度区间。
+
 ## 说明与测试
 
 - 仿真真值来自 `urdf/coludata_arm.urdf`，先验来自 `config.yaml`；可用 `--urdf 文件路径` 加载修改后的模型。
